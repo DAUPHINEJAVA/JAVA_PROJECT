@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="AppJPA" transaction-type="RESOURCE_LOCAL">
+		<non-jta-data-source>java:jboss/datasources/JavaBD</non-jta-data-source>
+		<class>app.jpa.entities.Action</class>
+		<class>app.jpa.entities.Contrat</class>
+		<class>app.jpa.entities.MembreSociete</class>
+		<class>app.jpa.entities.Publication</class>
+		<class>app.jpa.entities.Societe</class>
+		<class>app.jpa.entities.StockOption</class>
+		<class>app.jpa.entities.User</class>
+		<properties>
+			<property name="javax.persistence.jdbc.user" value="root"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/JEE"/>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+		</properties>
+	</persistence-unit>
+</persistence>
