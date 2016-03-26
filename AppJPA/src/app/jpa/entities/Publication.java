@@ -64,4 +64,5 @@ public class Publication implements Serializable {
 		this.user = user;
 	}
 
+	
 }
