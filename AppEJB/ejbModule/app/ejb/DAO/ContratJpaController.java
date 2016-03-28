@@ -1,5 +1,156 @@
 package app.ejb.DAO;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
+import javax.transaction.UserTransaction;
+
+import app.ejb.DAO.exceptions.NonexistentEntityException;
+import app.ejb.DAO.exceptions.RollbackFailureException;
+import app.jpa.entities.Contrat;
+import app.jpa.entities.MembreSociete;
+
 public class ContratJpaController {
+
+	public ContratJpaController(UserTransaction utx, EntityManagerFactory emf) {
+		this.utx = utx;
+		this.emf = emf;
+	}
+
+	private UserTransaction utx = null;
+	private EntityManagerFactory emf = null;
+
+	/**
+	 * getEntityManager() permet de cr�er une EntityManager.
+	 * 
+	 * @return
+	 */
+	public EntityManager getEntityManager() {
+		return emf.createEntityManager();
+	}
+
+	public void create(Contrat contrat) throws RollbackFailureException, Exception {
+
+		EntityManager em = null;
+		try {
+			utx.begin();
+			em = getEntityManager();
+			em.persist(contrat);
+			utx.commit();
+		} catch (Exception ex) {
+			try {
+				utx.rollback();
+			} catch (Exception re) {
+				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+			}
+			throw ex;
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+	}
+
+	public void edit(Contrat contrat) throws NonexistentEntityException, RollbackFailureException, Exception {
+		EntityManager em = null;
+		try {
+			utx.begin();
+			em = getEntityManager();
+			Contrat persistentContrat = em.find(Contrat.class, contrat.getNumero());
+
+			List<Contrat> allContrat = findContratEntities();
+
+			for (Contrat ContratListToAttach : allContrat) {
+
+				if (contrat.getNumero() == contrat.getNumero()) {
+
+					destroy(contrat.getNumero());
+					create(contrat);
+
+				}
+			}
+			utx.commit();
+		} catch (Exception ex) {
+			try {
+				utx.rollback();
+			} catch (Exception re) {
+				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+			}
+			String msg = ex.getLocalizedMessage();
+			if (msg == null || msg.length() == 0) {
+				int id = contrat.getNumero();
+				if (findContrat(id) == null) {
+					throw new NonexistentEntityException("The Contrat with id " + id + " no longer exists.");
+				}
+			}
+			throw ex;
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+	}
+
+	public void destroy(int id) throws NonexistentEntityException, RollbackFailureException, Exception {
+			EntityManager em = null;
+			try {
+				utx.begin();
+				em = getEntityManager();
+				Contrat contrat;
+				try {
+					contrat = em.getReference(Contrat.class, id);
+					contrat.getNumero()s;
+				} catch (EntityNotFoundException enfe) {
+					throw new NonexistentEntityException("The Contrat with id " + id + " no longer exists.", enfe);
+				}
+
+				em.remove(contrat);
+				utx.commit();
+			} catch (Exception ex) {
+				try {
+					utx.rollback();
+				} catch (Exception re) {
+					throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				}
+				throw ex;
+			} finally {
+				if (em != null) {
+					em.close();
+				}
+			}
+		}
+
+	public List<contrat> findContratEntities() {
+		return findContratEntities(true, -1, -1);
+	}
+
+	public List<Contrat> findMembreSocieteEntities(int maxResults, int firstResult) {
+		return findContratEntities(false, maxResults, firstResult);
+	}
+
+	private List<Contrat> findContratEntities(boolean all, int maxResults, int firstResult) {
+		EntityManager em = getEntityManager();
+		try {
+			CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
+			cq.select(cq.from(Contrat.class));
+			Query q = em.createQuery(cq);
+			if (!all) {
+				q.setMaxResults(maxResults);
+				q.setFirstResult(firstResult);
+			}
+			return q.getResultList();
+		} finally {
+			em.close();
+		}
+	}
+
+	public Contrat findContrat(int id) {
+		EntityManager em = getEntityManager();
+		try {
+			return em.find(Contrat.class, id);
+		} finally {
+			em.close();
+		}
+	}
 
 }
