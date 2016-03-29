@@ -1,0 +1,33 @@
+<%-- 
+    Document   : resetPassword
+    Created on : Jan 12, 2015, 10:23:11 PM
+    Author     : root
+--%>
+<%@ page pageEncoding="UTF-8" %>
+
+        <c:if test="${info != null}">
+            <h2 class="bg-info"><c:out value="${info}"/></h2>
+        </c:if>
+
+        <form method="POST" action="resetPassword" class="form-group-sm" role="form">
+
+            <hr>
+            <p class="text-center text-info"><strong>Pour réinitialiser votre mot de passe, veuillez entrer l'adresse email avec laquelle est enregistré votre compte</strong></p>
+
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <input type="email" name="email" id="email" class="form-control" value="" required/>
+                </div>
+            </div><div style="clear:both"></div>
+            
+            <hr>
+
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <input type="submit" value="Envoyer" class="btn btn-success btn-lg btn-block"/>
+            </div><div style="clear:both"></div>
+
+            <hr>
+
+        </form>

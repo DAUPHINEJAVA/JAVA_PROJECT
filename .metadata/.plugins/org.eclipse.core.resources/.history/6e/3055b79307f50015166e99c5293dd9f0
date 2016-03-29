@@ -1,0 +1,8 @@
+package app.ejb.implement;
+
+import javax.ejb.Remote;
+
+@Remote
+public interface GestionContratBeanRemote {
+
+}

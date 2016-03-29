@@ -1,0 +1,42 @@
+<%-- 
+    Document   : signUp
+    Created on : Dec 22, 2014, 5:59:09 PM
+    Author     : dac
+--%>
+
+        <form method="POST" action="signUp<c:if test="${redirect != null}"><c:out value="?redirect=${redirect}"/></c:if>" class="form-group-sm col-sm-6" role="form">
+            <input type ='hidden' name="action" value="signUp">
+            <h1>Inscription d'un nouvel utilisateur</h1>
+            <c:if test="${errorMessage != null}">
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Erreur:</span>
+                    <c:out value="${errorMessage}"/>
+                </div>
+            </c:if>
+            <div class="form-group<c:if test="${emailError}"> has-error</c:if>">
+                <label for="password">Email:</label> 
+                <input type="email" name="mail" <c:if test="${email != null}">value="<c:out value="${email}"/>"</c:if> id="mail" class="form-control" placeholder="paul.dupont@fournisseur.fr" required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de Passe :</label> 
+                <input type="password" name="password" id="password" class="form-control" placeholder="********" required/>
+            </div>
+            <div class="form-group">
+                <label for="user">Nom :</label> 
+                <input type="text" name="nom" id="nom" <c:if test="${nom != null}">value="<c:out value="${nom}"/>"</c:if> class="form-control" placeholder="Dupont" required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Prénom :</label> 
+                <input type="text" name="prenom" id="prenom" <c:if test="${prenom != null}">value="<c:out value="${prenom}"/>"</c:if> class="form-control" placeholder="Paul" required/>
+            </div>
+            <div class="form-group">
+                <label for="password">Adresse Facturation :</label> 
+                <input type="text" name="adresse" id="adresse" <c:if test="${adresse != null}">value="<c:out value="${adresse}"/>"</c:if> class="form-control" placeholder="3 rue des Mathématiques, 38000 Grenoble" required/>
+            </div>
+            <div class="form-group<c:if test="${errorNum}"> has-error</c:if>">
+                <label for="password">Téléphone :</label> 
+                <input type="tel" pattern="^0\d{9}$" title="Indiquez votre numéro de téléphone au format 0102030405 (sans espace)" <c:if test="${telephone != null}">value="<c:out value="${telephone}"/>"</c:if> name="tel" id="tel" class="form-control" placeholder="0476329417" required/>
+            </div>
+            <input type="submit" name="S'inscrire" value="S'inscrire" class="btn btn-success btn-lg btn-block"/>
+        </form>

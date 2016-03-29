@@ -1,0 +1,122 @@
+<%@page import="utils.CategoryUtils"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@page import="app.jpa.entities.Contrat" %>
+    <%@page import="java.util.List" %>
+    <%if(request.getAttribute("logout") != null)
+    	{
+    		session.removeAttribute("userEmailOk");
+    		response.sendRedirect("index.jsp");
+    	}
+    	%>
+    <%if(request.getAttribute("userEmailOk") != null){
+    	session.setAttribute("userEmailOk", request.getAttribute("userEmailOk"));
+    	response.sendRedirect("index.jsp");
+    }
+    	%>  	
+
+    <% 	
+    	HomeController homeController = new HomeController();
+    	List<Product> listRandomProd = (List<Product>)  homeController.getFourRandomProducts();
+    	List<Product> listLastProd = (List<Product>)  homeController.getFourNewProducts();
+    %>
+    
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+ 
+	</head>
+<body>
+	
+	<jsp:include page="Header.jsp" />
+	<div id="top-banner-and-menu">
+	<div class="container">
+		
+		<div class="col-xs-12 col-sm-4 col-md-3 sidemenu-holder">
+			<!-- ================================== TOP NAVIGATION ================================== -->
+<body>
+	<CENTER>
+		<H4>
+			Compte n°<jsp:getProperty name="_COMPTE_COURANT" property="nocompte" />
+		</H4>
+		<TABLE border="1">
+			<TBODY>
+				<TR>
+					<TD align="center">ID opération</TD>
+					<TD align="center">N° de compte</TD>
+					<TD align="center">Opération</TD>
+					<TD align="center">Montant</TD>
+					<TD align="center">date</TD>
+					<TD align="center">Heure</TD>
+				</TR>
+			</TBODY>
+
+			<%
+				Contrat contrat = null;
+				ArrayList<Contrat> resultat = contratBean.getRandomFourContrat();
+				foreach(Contrat  p : resultat){
+					
+			%>
+			<TBODY>
+				<TR>
+					<TD align="center"><%=p.getNumero()%></TD>
+					
+				</TR>
+				<%
+					}
+					
+				%>
+			
+		</TABLE>
+</body>
+<!-- ========================================= TOP BRANDS : END ========================================= -->		
+<jsp:include page="Footer.jsp" />
+<!-- ============================================================= FOOTER ============================================================= -->
+	<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+
+	<script>
+	$( document ).ready(function() {
+	    $('#top-megamenu-nav').hide();
+	    $('header').css('padding', '0px 0px 31px');
+	    $('header').css('borderBottom', '1px solid rgb(224, 224, 224)');
+	});
+	</script>
+
+</body>
+</html>

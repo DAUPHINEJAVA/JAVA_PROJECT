@@ -1,8 +1,12 @@
 package app.ejb.DAO;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.UserTransaction;
 
 import app.ejb.DAO.exceptions.NonexistentEntityException;
@@ -29,7 +33,8 @@ public class ContratJpaController {
 		return emf.createEntityManager();
 	}
 
-	public void create(Contrat contrat) throws RollbackFailureException, Exception {
+	public void create(Contrat contrat) throws RollbackFailureException,
+			Exception {
 
 		EntityManager em = null;
 		try {
@@ -41,7 +46,9 @@ public class ContratJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			throw ex;
 		} finally {
@@ -51,12 +58,14 @@ public class ContratJpaController {
 		}
 	}
 
-	public void edit(Contrat contrat) throws NonexistentEntityException, RollbackFailureException, Exception {
+	public void edit(Contrat contrat) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
 		EntityManager em = null;
 		try {
 			utx.begin();
 			em = getEntityManager();
-			Contrat persistentContrat = em.find(Contrat.class, contrat.getNumero());
+			Contrat persistentContrat = em.find(Contrat.class,
+					contrat.getNumero());
 
 			List<Contrat> allContrat = findContratEntities();
 
@@ -74,13 +83,16 @@ public class ContratJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			String msg = ex.getLocalizedMessage();
 			if (msg == null || msg.length() == 0) {
 				int id = contrat.getNumero();
 				if (findContrat(id) == null) {
-					throw new NonexistentEntityException("The Contrat with id " + id + " no longer exists.");
+					throw new NonexistentEntityException("The Contrat with id "
+							+ id + " no longer exists.");
 				}
 			}
 			throw ex;
@@ -91,44 +103,50 @@ public class ContratJpaController {
 		}
 	}
 
-	public void destroy(int id) throws NonexistentEntityException, RollbackFailureException, Exception {
-			EntityManager em = null;
+	public void destroy(int id) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
+		EntityManager em = null;
+		try {
+			utx.begin();
+			em = getEntityManager();
+			Contrat contrat;
 			try {
-				utx.begin();
-				em = getEntityManager();
-				Contrat contrat;
-				try {
-					contrat = em.getReference(Contrat.class, id);
-					contrat.getNumero()s;
-				} catch (EntityNotFoundException enfe) {
-					throw new NonexistentEntityException("The Contrat with id " + id + " no longer exists.", enfe);
-				}
+				contrat = em.getReference(Contrat.class, id);
+				contrat.getNumero();
+			} catch (EntityNotFoundException enfe) {
+				throw new NonexistentEntityException("The Contrat with id "
+						+ id + " no longer exists.", enfe);
+			}
 
-				em.remove(contrat);
-				utx.commit();
-			} catch (Exception ex) {
-				try {
-					utx.rollback();
-				} catch (Exception re) {
-					throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
-				}
-				throw ex;
-			} finally {
-				if (em != null) {
-					em.close();
-				}
+			em.remove(contrat);
+			utx.commit();
+		} catch (Exception ex) {
+			try {
+				utx.rollback();
+			} catch (Exception re) {
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
+			}
+			throw ex;
+		} finally {
+			if (em != null) {
+				em.close();
 			}
 		}
+	}
 
-	public List<contrat> findContratEntities() {
+	public List<Contrat> findContratEntities() {
 		return findContratEntities(true, -1, -1);
 	}
 
-	public List<Contrat> findMembreSocieteEntities(int maxResults, int firstResult) {
+	public List<Contrat> findContratEntities(int maxResults,
+			int firstResult) {
 		return findContratEntities(false, maxResults, firstResult);
 	}
 
-	private List<Contrat> findContratEntities(boolean all, int maxResults, int firstResult) {
+	private List<Contrat> findContratEntities(boolean all, int maxResults,
+			int firstResult) {
 		EntityManager em = getEntityManager();
 		try {
 			CriteriaQuery cq = em.getCriteriaBuilder().createQuery();

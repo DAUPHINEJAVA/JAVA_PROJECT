@@ -1,0 +1,394 @@
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%@ page import="app.vue.servlets.utils.CategoryUtils"%>
+    <%@page import="app.jpa.entities.Contrat" %>
+    <%@page import="java.util.List" %>
+     <%@page import="javafx.util.Pair" %>
+    <%@page import="app.vue.servlets.HomeServlet" %>
+    <%if(request.getAttribute("logout") != null)
+    	{
+    		session.removeAttribute("userEmailOk");
+    		response.sendRedirect("index.jsp");
+    	}
+    	%>
+    <%if(request.getAttribute("userEmailOk") != null){
+    	session.setAttribute("userEmailOk", request.getAttribute("userEmailOk"));
+    	response.sendRedirect("index.jsp");
+    }
+    	%>  	
+
+    <% 	
+    	HomeServlet homeServlet = new HomeSevlet();
+    	List<Contrat>> listRandomCont = (List<Contrat>)  homeSevlet.getFourRandomContracts();
+    	List<Contratt> listLastProd = (List<Contrat>)  homeController.getFourNewContrats();
+    %>
+    
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+ 
+	</head>
+<body>
+	
+	<jsp:include page="Header.jsp" />
+	<div id="top-banner-and-menu">
+	<div class="container">
+		
+		<div class="col-xs-12 col-sm-4 col-md-3 sidemenu-holder">
+			<!-- ================================== TOP NAVIGATION ================================== -->
+<div class="side-menu animate-dropdown">
+    <div class="head"><i class="fa fa-list"></i> all brands</div>        
+    <nav class="yamm megamenu-horizontal" role="navigation">
+        <ul class="nav">
+            <li class="dropdown menu-item">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Apple</a>
+                <ul class="dropdown-menu mega-menu">
+                    <li class="yamm-content">
+                        <!-- ================================== MEGAMENU VERTICAL ================================== -->
+<div class="row" style="height: 369px;">
+    <div class="col-xs-12 col-lg-4">
+        <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?brand=Apple&category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+        </ul>
+    </div>
+    <div class="dropdown-banner-holder">
+        <a href="#"><img alt="" src="assets/images/banners/Apple_banner.jpg" /></a>
+    </div>
+</div>
+<!-- ================================== MEGAMENU VERTICAL ================================== -->                        
+                    </li>
+                </ul>
+            </li><!-- /.menu-item -->
+            <li class="dropdown menu-item">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Samsung</a>
+                <ul class="dropdown-menu mega-menu">
+                    <li class="yamm-content">
+                        <!-- ================================== MEGAMENU VERTICAL ================================== -->
+<div class="row" style="height: 369px;">
+    <div class="col-xs-12 col-lg-4">
+         <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?brand=Samsung&category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+        </ul>
+    </div>
+    <div class="dropdown-banner-holder">
+        <a href="#"><img alt="" src="assets/images/banners/Samsung_banner.jpg" /></a>
+    </div>
+</div>
+<!-- ================================== MEGAMENU VERTICAL ================================== -->                            
+                    </li>
+                </ul>
+            </li><!-- /.menu-item -->
+            <li class="dropdown menu-item">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sony</a>
+                <ul class="dropdown-menu mega-menu">
+                    <li class="yamm-content">
+                        <!-- ================================== MEGAMENU VERTICAL ================================== -->
+<div class="row" style="height: 369px;">
+    <div class="col-xs-12 col-lg-4">
+         <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?brand=Sony&category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+        </ul>
+    </div>
+    <div class="dropdown-banner-holder">
+        <a href="#"><img alt="" src="assets/images/banners/Sony_banner.png" /></a>
+    </div>
+</div>
+<!-- ================================== MEGAMENU VERTICAL ================================== -->                    </li>
+                </ul>
+            </li><!-- /.menu-item -->
+            <li class="dropdown menu-item">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Nokia</a>
+                <ul class="dropdown-menu mega-menu">
+                    <li class="yamm-content">
+                        <!-- ================================== MEGAMENU VERTICAL ================================== -->
+<div class="row"  style="height: 369px;">
+    <div class="col-xs-12 col-lg-4">
+         <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?brand=Nokia&category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+        </ul>
+    </div>
+    <div class="dropdown-banner-holder">
+        <a href="#"><img alt="" src="assets/images/banners/Nokia_banner.png" /></a>
+    </div>
+</div>
+<!-- ================================== MEGAMENU VERTICAL ================================== -->    
+                    </li>
+                </ul>
+            </li><!-- /.menu-item -->
+            
+            <li class="dropdown menu-item">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Other</a>
+                <ul class="dropdown-menu mega-menu">
+                    <li class="yamm-content">
+                        <!-- ================================== MEGAMENU VERTICAL ================================== -->
+<div class="row" style="height: 369px;">
+    <div class="col-xs-12 col-lg-4">
+         <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?brand=Other&category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+        </ul>
+    </div>
+    <div class="dropdown-banner-holder">
+        <a href="#"><img alt="" src="assets/images/banners/Other_banner.jpg" /></a>
+    </div>
+</div>
+<!-- ================================== MEGAMENU VERTICAL ================================== -->    
+                    </li>
+                </ul>
+            </li><!-- /.menu-item -->
+
+        </ul><!-- /.nav -->
+    </nav><!-- /.megamenu-horizontal -->
+</div><!-- /.side-menu -->
+<!-- ================================== TOP NAVIGATION : END ================================== -->		</div><!-- /.sidemenu-holder -->
+
+		<div class="col-xs-12 col-sm-8 col-md-9 homebanner-holder">
+			<!-- ========================================== SECTION – HERO ========================================= -->
+			
+<div id="hero">
+	<div id="owl-main" class="owl-carousel owl-inner-nav owl-ui-sm">
+		
+		<div class="item" style="background-image: url(assets/images/sliders/slider1.jpg);">
+		</div><!-- /.item -->
+
+		<div class="item" style="background-image: url(assets/images/sliders/slider2.jpg);">
+		</div><!-- /.item -->
+
+	</div><!-- /.owl-carousel -->
+</div>
+			
+<!-- ========================================= SECTION – HERO : END ========================================= -->			
+		</div><!-- /.homebanner-holder -->
+
+	</div><!-- /.container -->
+</div><!-- /#top-banner-and-menu -->
+
+<!-- ========================================= HOME BANNERS ========================================= -->
+<section id="banner-holder" class="wow fadeInUp">
+    <div class="container">
+        <div class="col-xs-12 col-lg-6 no-margin banner">
+            <a class="notClickable" href="#">
+                <div class="banner-text theblue">
+                    <h1>New Life</h1>
+                    <span class="tagline">Introducing New Category</span>
+                </div>
+                <img class="banner-image" alt="" src="assets/images/bg_1.png" data-echo="assets/images/bg_1.png" />
+            </a>
+        </div>
+        <div class="col-xs-12 col-lg-6 no-margin text-right banner">
+            <a class="notClickable" href="#">
+                <div class="banner-text right">
+                    <h1>Time &amp; Style</h1>
+                    <span class="tagline">Checkout new arrivals</span>
+                </div>
+                <img class="banner-image" alt="" src="assets/images/bg_2.png" data-echo="assets/images/bg_2.png" />
+            </a>
+        </div>
+    </div><!-- /.container -->
+</section><!-- /#banner-holder -->
+<!-- ========================================= HOME BANNERS : END ========================================= -->
+<div id="Contrats-tab" class="wow fadeInUp">
+    <div class="container">
+        <div class="tab-holder">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" >
+                <li class="active"><a href="#featured" data-toggle="tab">featured</a></li>
+                <li><a href="#new-arrivals" data-toggle="tab">new arrivals</a></li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane active" id="featured">
+                    <div class="Contrat-grid-holder">
+                    <%for(Contrat p: listRandomProd ){ %>
+                        <div class="col-sm-4 col-md-3  no-margin Contrat-item-holder hover homeContratShow" style="cursor:pointer;" data-redirectparam="<%= p.getId() %>">
+                            <div class="Contrat-item">
+                                <div class="ribbon red" <%if(p.getMontat() == 0){ %>style="display: none;"<%} %>><span>sale</span></div> 
+                                <div class="image">
+                                    <img alt="" src="data:image/jpeg;base64,<%=p.getImage() %>" data-echo="data:image/jpeg;base64,<%=p.getImage() %>" style="max-width:50%;" />
+                                </div>
+                                <div class="body">
+                                    <div class="title">
+                                        <a href="ContratServlet?idContrat=<%= p.getId()%>"><%= p.getNumero() %></a>
+                                    </div>
+              
+                                <div class="prices">
+                                    <div class="price-prev"><%if(p.getMontat() > 0){%>$<%= p.getMontat() %><%} %></div>
+                                    <div class="price-current pull-right">$<%= p.getMontat() %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <%} %>
+                   </div>
+                </div>
+                <div class="tab-pane" id="new-arrivals">
+                    <div class="Contrat-grid-holder">                        
+                        <%for(Contrat p: listLastCont ){ %>
+                        <div class="col-sm-4 col-md-3  no-margin Contrat-item-holder hover homeContratShow" style="cursor:pointer;" data-redirectparam="<%= p.getId() %>">
+                            <div class="Contrat-item">
+                                <div class="ribbon blue"><span>new!</span></div>
+                                <div class="ribbon red" <%if(p.getMontat() == 0){ %>style="display: none;"<%} %>><span>sale</span></div> 
+                                <div class="image">
+                                    <img alt="" src="data:image/jpeg;base64,<%=p.getImage() %>" data-echo="data:image/jpeg;base64,<%=p.getImage() %>" style="max-width:50%;" />
+                                </div>
+                                <div class="body">
+                                    <div class="title">
+                                        <a href="ContratController?idContrat=<%= p.getNumero()%>"><%= p.getNumero() %></a>
+                                    </div>
+                                    <div class="brand"><%=p.getCategory() %></div>
+                                </div>
+                                <div class="prices">
+                                    <div class="price-prev"><%if(p.getMontat() > 0){%>$<%= p.getSale_price() %><%} %></div>
+                                    <div class="price-current pull-right">$<%= p.getPrice() %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <%} %>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ========================================= TOP BRANDS ========================================= -->
+<section id="top-brands" class="wow fadeInUp" style="margin-top: 65px;">
+    <div class="container">
+        <div class="carousel-holder" >
+            
+            <div class="title-nav">
+                <h1>Top Brands</h1>
+                <div class="nav-holder">
+                    <a href="#prev" data-target="#owl-brands" class="slider-prev btn-prev fa fa-angle-left"></a>
+                    <a href="#next" data-target="#owl-brands" class="slider-next btn-next fa fa-angle-right"></a>
+                </div>
+            </div><!-- /.title-nav -->
+            
+            <div id="owl-brands" class="owl-carousel brands-carousel">
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/apple.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/samsung.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/sony.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/nokia.jpg" />
+                    </a>
+                </div><!-- /.carousel-item -->
+
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/lg.jpg" />
+                    </a>
+                </div><!-- /.carousel-item -->
+
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/acer.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/asus.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/toshiba.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/dell.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+                
+                <div class="carousel-item">
+                    <a href="#">
+                        <img alt="" src="assets/images/brands/lenovo.png" />
+                    </a>
+                </div><!-- /.carousel-item -->
+
+            </div><!-- /.brands-caresoul -->
+
+        </div><!-- /.carousel-holder -->
+    </div><!-- /.container -->
+</section><!-- /#top-brands -->
+<!-- ========================================= TOP BRANDS : END ========================================= -->		
+<jsp:include page="Footer.jsp" />
+<!-- ============================================================= FOOTER ============================================================= -->
+	<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+
+	<script>
+	$( document ).ready(function() {
+	    $('#top-megamenu-nav').hide();
+	    $('header').css('padding', '0px 0px 31px');
+	    $('header').css('borderBottom', '1px solid rgb(224, 224, 224)');
+	});
+	</script>
+
+</body>
+</html>

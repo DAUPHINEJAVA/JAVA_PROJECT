@@ -1,0 +1,246 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Servlets;
+
+import EJB.CategorieBeanLocal;
+import EJB.ProjetBeanLocal;
+import EJB.ProjetDetailsBeanLocal;
+import Model.Projet;
+import Model.Utilisateur;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
+
+/**
+ * UploadServlet est la classe qui gère l’ajout d’un projet et l’envoi du code d’un projet sur le serveur.
+ * 
+ * @author dac
+ */
+@WebServlet(name = "UploadServlet", urlPatterns = {"/uploadServlet"})
+public class UploadServlet extends HttpServlet {
+
+    @EJB
+    private ProjetBeanLocal projetBean;
+    @EJB
+    private ProjetDetailsBeanLocal project;
+    @EJB
+    private CategorieBeanLocal categorieBean;
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // check user is admin
+        Utilisateur user = null;
+        HttpSession session = request.getSession();
+        user = (Utilisateur) session.getAttribute("user");
+        if (user == null || !user.getTypeUser().equals("ADMIN")) {
+            response.sendError(401);	// unauthorized
+            return;
+        }
+        request.setAttribute("listeCategories", categorieBean.getListeCategories());//récupération de la liste catégorie
+        getServletContext().getRequestDispatcher("/WEB-INF/admin/Upload.jsp").forward(request, response);
+
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // check user is admin
+        Utilisateur user = null;
+        HttpSession session = request.getSession();
+        user = (Utilisateur) session.getAttribute("user");
+        if (user == null || !user.getTypeUser().equals("ADMIN")) {
+            response.sendError(401);	// unauthorized
+            return;
+        }
+        
+        String filename = null;
+        String filename1 = null;
+        String nom = null;
+        String description = null;
+        String licence = null;
+        String visibilite = null;
+        String langage = null;
+        String saveFilePicture = "/home/dac/DAC/upload/img";
+        String saveFileProject = "/home/dac/DAC/upload/projets";
+        double prix = 0;
+        int categorie = 0;
+        long date =  System.currentTimeMillis() / 1000;
+        //Appel de la méthode UploadFile
+        UploadFile(request, response, nom, licence, visibilite, description, filename, prix, (int)date, categorie, langage, filename1, saveFileProject, saveFilePicture);
+        response.sendRedirect("/ecommerceDac-web");
+    }
+
+    /**s
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+    /**
+     * uploadFile() permet de charger un fichier.
+     * @param request
+     * @param response
+     * @param nom
+     * @param licence
+     * @param visibilite
+     * @param description
+     * @param filename
+     * @param prix
+     * @param date
+     * @param categorie
+     * @param langage
+     * @param filename1
+     * @param saveFileProject
+     * @param saveFilePicture
+     * @return 
+     */
+    private int UploadFile(HttpServletRequest request, HttpServletResponse response, String nom, String licence, String visibilite, String description,
+            String filename, double prix, int date, int categorie, String langage, String filename1, String saveFileProject, String saveFilePicture) {
+
+        try {
+
+            boolean ismultipart = ServletFileUpload.isMultipartContent(request);
+            if (!ismultipart) {
+            } else {
+                FileItemFactory factory = new DiskFileItemFactory();
+                ServletFileUpload upload = new ServletFileUpload(factory);
+                List<FileItem> items = new <FileItem> ArrayList();
+                try {
+                    items = upload.parseRequest(request);
+                    for (FileItem item : items) {//parcourir tous les inputs
+                        if (item.isFormField()) {//si l'input est de type autre que file
+                            if (item.getFieldName().equals("nom_projet")) {
+                                nom = item.getString();
+                            }
+
+                            if (item.getFieldName().equals("description")) {
+                                description = item.getString();
+                            }
+
+                            if (item.getFieldName().equals("licence")) {
+                                licence = item.getString();
+                            }
+
+                            if (item.getFieldName().equals("visibilite")) {
+                                visibilite = item.getString();
+                            }
+
+                            if (item.getFieldName().equals("langage")) {
+                                langage = item.getString();
+                            }
+
+                            if (item.getFieldName().equals("prix")) {
+                                try {
+                                    prix = new Double(item.getString());
+                                } catch (Exception e) {
+                                    prix = 0;
+                                }
+                            }
+
+                            if (item.getFieldName().equals("categorie")) {
+                                try {
+                                    categorie = Integer.parseInt(item.getString());
+                                } catch (Exception e) {
+                                    categorie = 0;
+                                }
+                            }
+
+                        } else {
+                            if (item.getFieldName().equals("filetoupload")) {
+                                String itemname1 = item.getName();
+                                if ((itemname1 == null) || itemname1.equals("")) {
+                                    continue;
+                                }
+                                filename1 = FilenameUtils.getName(itemname1);
+                                filename1 = new Date().getTime() + filename1;
+                                File f1 = ckeckExist(filename1, saveFileProject);
+                                item.write(f1);
+                            } else {
+
+                                String itemname = item.getName();
+                                if ((itemname == null) || itemname.equals("")) {
+                                    continue;
+                                }
+                                filename = FilenameUtils.getName(itemname);
+                                filename = new Date().getTime() + filename;
+                                File f = ckeckExist(filename, saveFilePicture);
+                                item.write(f);
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        projetBean.addProjet(nom, licence, visibilite, description, "img/"+filename, prix, date, categorie, langage, saveFileProject + "/" + filename1);
+
+        return 1;
+
+    }
+
+    /**
+     * checkExist() permet de vérifier si un fichier existe déjà
+     * @param fileName
+     * @param saveFile
+     * @return un fichier
+     */
+    private File ckeckExist(String fileName, String saveFile) {
+
+        File f = new File(saveFile + "/" + fileName);
+        if (f.exists()) {
+            StringBuffer sb = new StringBuffer(fileName);
+            //sb.insert(sb.lastIndexOf("."), "-"+new Date().getTime());
+            f = new File(saveFile + "/" + sb.toString());
+        }
+        return (f);
+    }
+}

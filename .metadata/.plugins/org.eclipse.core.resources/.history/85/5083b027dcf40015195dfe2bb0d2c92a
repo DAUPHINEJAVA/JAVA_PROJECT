@@ -1,0 +1,142 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+		<link href="assets/css/green.css" rel="alternate stylesheet" title="Green color">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+
+ 
+	</head>
+<body>
+	<jsp:include page="Header.jsp" />
+<main id="contact-us" class="inner-bottom-md" style="margin-top: -35px;">
+	<section class="google-map map-holder">
+		<div id="map" class="map center"></div>
+	</section>
+
+	<div class="container">
+		<div class="row">
+			
+			<div class="col-md-8">
+				<section class="section leave-a-message">
+					<h2 class="bordered">Leave a Message</h2>
+					<form id="contact-form" class="contact-form cf-style-1 inner-top-xs" method="post" >
+                        <div class="row field-row">
+                            <div class="col-xs-12 col-sm-6">
+                                <label>Your Name*</label>
+                                <input class="le-input" data-validate="required,min(2)" >
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <label>Your Email*</label>
+                                <input class="le-input" data-validate="required,email">
+                            </div>
+                        </div><!-- /.field-row -->
+                        
+                        <div class="field-row">
+                            <label>Subject*</label>
+                            <input type="text" class="le-input" data-validate="required,min(2)">
+                        </div><!-- /.field-row -->
+
+                        <div class="field-row">
+                            <label>Your Message*</label>
+                            <textarea id="messageContact"rows="8" class="le-input"></textarea>
+                        </div><!-- /.field-row -->
+
+                        <div class="buttons-holder">
+                            <button id="contactSendBtn" type="submit" class="le-button huge">Send Message</button>
+                        </div><!-- /.buttons-holder -->
+                    </form><!-- /.contact-form -->
+				</section><!-- /.leave-a-message -->
+			</div><!-- /.col -->
+
+			<div class="col-md-4">
+				<section class="our-store section inner-left-xs">
+					<h2 class="bordered">Our Store</h2>
+					<address>
+						9 rue des perchamps <br/>
+					    Paris, Ile de France <br/>
+						75016, France
+					</address>
+					<h3>Hours of Operation</h3>
+					<ul class="list-unstyled operation-hours">
+						<li class="clearfix">
+							<span class="day">Monday:</span>
+							<span class="pull-right hours">10AM - 20PM</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Tuesday:</span>
+							<span class="pull-right hours">10AM - 20PM</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Wednesday:</span>
+							<span class="pull-right hours">10AM - 20PM</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Thursday:</span>
+							<span class="pull-right hours">10AM - 20PM</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Friday:</span>
+							<span class="pull-right hours">10AM - 20PM</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Saturday:</span>
+							<span class="pull-right hours">Closed</span>
+						</li>
+						<li class="clearfix">
+							<span class="day">Sunday</span>
+							<span class="pull-right hours">Closed</span>
+						</li>
+					</ul>
+					<h3>Career</h3>
+					<p>If you're interested in employment opportunities at DigitalDauphine, please email us: <a href="mailto:contact@digitaldauphine.fr">contact@digitaldauphine.fr</a></p>
+				</section><!-- /.our-store -->
+			</div><!-- /.col -->
+
+		</div><!-- /.row -->
+	</div><!-- /.container -->
+</main>
+<!-- ========================================= MAIN : END ========================================= -->		<!-- ============================================================= FOOTER ============================================================= -->
+<jsp:include page="Footer.jsp" />
+
+	<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+
+</body>
+</html>

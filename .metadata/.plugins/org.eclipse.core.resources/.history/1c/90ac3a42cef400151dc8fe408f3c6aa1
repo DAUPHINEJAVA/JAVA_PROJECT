@@ -1,0 +1,331 @@
+<%@page import="utils.CategoryUtils"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%> 
+<%@page import="dao.UserDao" %>
+<%@page import="dao.UserDaoBean" %>
+<%@page import="models.User" %>
+<%@page import="dao.OrderDao" %>
+<%@page import="dao.OrderDaoBean" %>
+<%@page import="dao.ProductDao" %>
+<%@page import="dao.ProductDaoBean" %>
+<%@page import="models.Order" %>
+<%@page import="models.Product" %>
+<%@page import="java.util.List" %>
+<%@page import="java.util.ArrayList" %>
+<%@page import="javafx.util.Pair" %>
+ <%@page import="utils.CategoryUtils" %>
+    <%
+    User user = new User();
+    user.setAdress("");
+    user.setFirst_name("");
+    user.setLast_name("");
+    user.setLogin("");
+    user.setPassword("");
+    user.setPhone_number("");
+    List<Order> orders= new ArrayList<Order>();
+    List<Product> products = new ArrayList<Product>();
+    if(session.getAttribute("userEmailOk") != null){
+    	// get user information
+    	UserDao userDao = new UserDaoBean();
+    	user = userDao.getUserByEmail((String)session.getAttribute("userEmailOk"));
+    	// get user's orders
+    	OrderDao orderDao = new OrderDaoBean();
+    	orders= orderDao.getOrdersByUser(user.getId());
+    	// get user's products
+    	ProductDao productDao = new ProductDaoBean();
+    	products = productDao.getUserProducts(user.getId());
+    	}else{ 
+    	response.sendRedirect("failed.jsp");
+    	}
+   %>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+		<!--Start of Tawk.to Script-->
+		<script type="text/javascript">
+		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+		(function(){
+		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+		s1.async=true;
+		s1.src='https://embed.tawk.to/56b15b0843eb262a6a268593/default';
+		s1.charset='UTF-8';
+		s1.setAttribute('crossorigin','*');
+		s0.parentNode.insertBefore(s1,s0);
+		})();
+		</script>
+		<!--End of Tawk.to Script-->
+ 
+	</head>
+<body>
+	
+	<jsp:include page="Header.jsp" />
+
+<div id="products-tab" class="wow fadeInUp">
+    <div class="container">
+        <div class="tab-holder">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" style="margin-bottom:-19px;">
+                <li class="active"><a href="#information" data-toggle="tab">Edit your information</a></li>
+                <li><a href="#purchases" data-toggle="tab">Your orders</a></li>
+                <%if(user.getRole() == 2){ %>
+                <li><a href="#products" data-toggle="tab">Your products</a></li>
+                <li><a href="#sellProducts" data-toggle="tab">Sell a product</a></li>
+                <%} %>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="tab-pane active" id="information">
+                    <div class="product-grid-holder">
+                        <div class="col-md-10" style="margin-top:20px;border: 2px solid #ececec; padding-top: 15px;" data-redirectparam="">
+                            <form action="UserController" method="post">
+<p class="form-row form-row-first">
+<label for="account_first_name">First name <span class="required">*</span></label>
+<input type="text" class="le-input" name="account_first_name" id="account_first_name" data-validate="required,min(2)"  value="<%= user.getFirst_name() %>">
+</p>
+<p class="form-row form-row-last">
+<label for="account_last_name">Last name <span class="required">*</span></label>
+<input type="text" class="le-input" name="account_last_name" id="account_last_name" data-validate="required,min(2)" value="<%= user.getLast_name() %>">
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-last">
+<label for="phone_number">Phone number <span class="required">*</span></label>
+<input type="text" class="le-input" name="phone_number" id="phone_number" data-validate="required,number"value="<%= user.getPhone_number() %>">
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-last">
+<label for="adress_input">Address <span class="required">*</span></label>
+<input type="text" class="le-input" name="adress_input" id="adress_input" data-validate="required,min(5)"value="<%= user.getAdress() %>">
+</p>
+<div class="clear"></div>
+<p style="display:none;" class="form-row form-row-wide">
+<label for="account_email">Email address <span class="required">*</span></label>
+<input type="email" class="le-input" name="account_email" id="account_email" value="<%= user.getLogin() %>">
+</p>
+<fieldset>
+<legend>Password Change</legend>
+<p class="form-row form-row-wide">
+<label for="password_1">New Password (leave blank to leave unchanged)</label>
+<input id="password1" type="password" class="le-input" name="password_1" id="password_1" data-validate="min(5)">
+</p>
+<p class="form-row form-row-wide">
+<label for="password_2">Confirm New Password</label>
+<input id="password2" type="password" class="le-input" name="password_2" id="password_2" data-validate="min(5)">
+</p>
+</fieldset>
+<div class="clear"></div>
+<div class="buttons-holder">
+                            <button id="btnEditconfirm" type="submit" class="le-button huge">Confirm edition</button>
+                        </div><br>
+</form>
+                        </div>
+                   </div>
+                </div>
+                <div class="tab-pane" id="purchases">
+                    <div class="product-grid-holder">
+                        <div class="col-md-10" style="margin-top:20px;border: 2px solid #ececec; padding-top: 15px;" data-redirectparam="">
+                           <table class="table">
+								  <thead>
+								    <tr>
+								      <th>#</th>
+								      <th>Date</th>
+								      <th>Reference</th>
+								      <th>Total Paid</th>
+								      <th>Details</th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								  <%for(Order order: orders){ %>
+								    <tr>
+								      <th scope="row"><%= orders.indexOf(order) + 1 %></th>
+								      <td><%= order.getDate() %></td>
+								      <td><%= order.getRef() %></td>
+								      <td>$<%= order.getTotal() %></td>
+								      <td><a href="InvoiceController?idOrder=<%= order.getId_order() %>">Click Here</a></td>
+								    </tr>
+								    <%} %>
+								  </tbody>
+								</table>
+                        </div>
+                   </div>
+                </div>
+                 <%if(user.getRole() == 2){ %>
+                <div class="tab-pane" id="products">
+                    <div class="product-grid-holder">
+                        <div class="col-md-10" style="margin-top:20px;border: 2px solid #ececec; padding-top: 15px;" data-redirectparam="">
+                            <table class="table">
+								  <thead>
+								    <tr>
+								      <th>#</th>
+								      <th>Image</th>
+								      <th>Name</th>
+								      <th>Brand</th>
+								      <th>Category</th>
+								      <th>Price</th>
+								      <th>In Sale</th>
+								      <th>Date</th>
+								      <th>Qty</th>
+								      <th>Active</th>
+								      <th>Pending</th>
+								      <th>Update Product<th>
+								    </tr>
+								  </thead>
+								  <tbody>
+								  <%for(Product p: products){ 
+									  List<Pair<Integer,String>> catList = CategoryUtils.getCatList();
+								  %>
+								    <tr>
+								    <th scope="row"><%= products.indexOf(p) + 1 %></th>
+								    <td><img alt="" style="max-width:20%;" src="data:image/jpeg;base64,<%=p.getImage() %>" /></td>
+								      <td><%= p.getName() %></td>
+								      <td><%= p.getCategory() %></td>
+								      <td><%for(Pair<Integer,String> pr: catList){
+								      if(pr.getKey() == p.getCatType()){
+								      %>
+								      <%= pr.getValue() %>
+								      <%}}%>
+								      </td>
+								      <td><%= p.getPrice() %></td>
+								      <td><%if(p.getSale_price() > 0){ %>YES<%}else{ %>NO<%} %></td>
+								      <td><%= p.getDate_MV() %></td>
+								      <td><%= p.getQte() %></td>
+									  <td><% if(p.isActive()) {%>YES<%}else{ %>NO<%} %></td>
+								      <td><% if(p.isPending()) {%>YES<%}else{ %>NO<%} %></td>
+								      <td>
+								      	<%if(!p.isPending()){ %>
+								      		<%if(p.isActive()){ %>
+								      			<a href="#" class="notClickable updateProductBtn" data-idprod="<%= p.getId()%>" data-valbtn="0">Disable</a>
+								      		<%}else{ %>
+								      		<a href="#" class="notClickable updateProductBtn" data-idprod="<%= p.getId()%>" data-valbtn="1">Active</a>
+								      		<%} %>
+								      	<%} %>
+								      </td>
+									</tr>
+								    <%} %>
+								  </tbody>
+								</table>
+                        </div>
+                   </div>
+                </div>
+                 <div class="tab-pane" id="sellProducts">
+                    <div class="product-grid-holder">
+                        <div class="col-md-10" style="margin-top:20px;border: 2px solid #ececec; padding-top: 15px;" data-redirectparam="">
+                              <form action="ProductController" method="POST">
+<p class="form-row form-row-first">
+<label for="product_name">Product name <span class="required">*</span></label>
+<input type="text" class="le-input" name="product_name" id="product_name" data-validate="required,min(5)">
+</p>
+<p class="form-row form-row-last">
+<label for="brand_input">Brand <span class="required">*</span></label>
+<select id="brand_input" name="brand_input" class="form-control le-input">
+                            	<option selected value="Apple">Apple</option>
+      							<option value="Samsung">Samsung</option>
+      							<option value="Sony">Sony</option>
+      							<option value="Nokia">Nokia</option>
+      							<option value="Other">Other</option>
+                        </select>
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-last">
+<label for="category_input">Category <span class="required">*</span></label>
+<select id="category_input" name="category_input" class="form-control le-input">
+<%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+<option <%if(CategoryUtils.getCatList().indexOf(t) == 0){ %>selected<%} %> value="<%= t.getKey()%>"><%= t.getValue() %></option>
+<%} %>
+                        </select></p>
+<div class="clear"></div>
+<p class="form-row form-row-last">
+<label for="price_input">Price <span class="required">*</span></label>
+<input type="text" class="le-input" name="price_input" id=""price_input"" data-validate="required,decimal">
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-wide">
+<label for="salePriceInput">Real price (0 if not in sale) <span class="required">*</span></label>
+<input type="text" class="le-input" name="salePriceInput" id="salePriceInput" data-validate="required,decimal">
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-wide">
+<label for="shortDescription">Short description</label>
+<textarea required="required" id="shortDescription" name="shortDescription" rows="2" class="le-input"></textarea>
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-wide">
+<label for="longDescription">Detailed description</label>
+<textarea required="required" id="longDescription" name="longDescription" rows="5" class="le-input"></textarea>
+</p>
+<div class="clear"></div>
+<p class="form-row form-row-wide">
+<label for="qteInput">Quantity</label>
+<input type="text" class="le-input" name="qteInput" id="qteInput" data-validate="required,number">
+</p>
+<p class="form-row form-row-wide">
+<label for="imageUrl">Image</label>
+<input required="required" type="file" class="le-input" name="imageUrl" id="imageUrl">
+</p>
+<p style="display:none;" class="form-row form-row-wide">
+<input  text class="le-input" name="idUserInput" id="imageUrl" value="<%= session.getAttribute("idUser")%>">
+</p>
+<div class="clear"></div>
+<div class="buttons-holder">
+                            <button id="btnAddProduct" type="submit" class="le-button huge">Add Product</button>
+                        </div><br>
+</form>
+                        </div>
+                   </div>
+                </div>
+                <%} %>
+            </div>
+        </div>
+    </div>
+</div>
+<jsp:include page="Footer.jsp" />
+<!-- ============================================================= FOOTER ============================================================= -->
+	<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+
+<%if(request.getAttribute("productAdded") != null){ %>
+		<script>
+		 $(document).ready(function() {
+			 $.notify(
+					  "Product Added successfully :)", 
+					  { className:"success",clickToHide: true, autoHide: false }
+					);
+			  });
+		</script>
+<%} %>
+</body>
+</html>

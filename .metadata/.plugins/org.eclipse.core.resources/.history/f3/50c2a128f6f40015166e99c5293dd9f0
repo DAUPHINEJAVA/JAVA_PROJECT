@@ -1,0 +1,20 @@
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+function Validatebodypanelbumper(theForm)
+{
+   var extension = theForm.PictureUpload.value.substr(theForm.PictureUpload1.value.lastIndexOf('.'));
+   if ((extension.toLowerCase() != ".gif") &&
+       (extension.toLowerCase() != ".jpg") &&
+       (extension != ".jpeg"))
+   {
+      alert("The \"FileUpload\" field contains an unapproved filename.");
+      theForm.PictureUpload1.focus();
+      return false;
+   }
+   return true;
+}
+
+

@@ -8,11 +8,11 @@
         <dependent-module archiveName="AppEJBClient.jar" deploy-path="/" handle="module:/resource/AppEJBClient/AppEJBClient">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="AppVue.war" deploy-path="/" handle="module:/resource/AppVue/AppVue">
-            <dependent-object/>
+        <dependent-module archiveName="AppJPA.jar" deploy-path="/lib" handle="module:/resource/AppJPA/AppJPA">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="AppJPA.jar" deploy-path="/lib" handle="module:/resource/AppJPA/AppJPA">
+        <dependent-module archiveName="AppVue.war" deploy-path="/" handle="module:/resource/AppVue/AppVue">
+            <dependent-object/>
             <dependency-type>uses</dependency-type>
         </dependent-module>
     </wb-module>

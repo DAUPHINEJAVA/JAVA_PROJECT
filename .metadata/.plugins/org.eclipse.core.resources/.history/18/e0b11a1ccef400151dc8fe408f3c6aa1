@@ -1,0 +1,34 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<script src="assets/js/jquery-1.10.2.min.js"></script>
+	<script src="assets/js/jquery-migrate-1.2.1.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="http://maps.google.com/maps/api/js?sensor=false&amp;language=en"></script>
+	<script src="assets/js/gmap3.min.js"></script>
+	<script src="assets/js/bootstrap-hover-dropdown.min.js"></script>
+	<script src="assets/js/owl.carousel.min.js"></script>
+	<script src="assets/js/css_browser_selector.min.js"></script>
+	<script src="assets/js/echo.min.js"></script>
+	<script src="assets/js/jquery.easing-1.3.min.js"></script>
+	<script src="assets/js/bootstrap-slider.min.js"></script>
+    <script src="assets/js/jquery.raty.min.js"></script>
+    <script src="assets/js/jquery.prettyPhoto.min.js"></script>
+    <script src="assets/js/jquery.customSelect.min.js"></script>
+    <script src="assets/js/wow.min.js"></script>
+    <script src="assets/js/verify.notify.min.js"></script>
+	<script src="assets/js/scripts.js"></script>
+
+	<script src="http://w.sharethis.com/button/buttons.js"></script>
+	<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/56b15b0843eb262a6a268593/default';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->

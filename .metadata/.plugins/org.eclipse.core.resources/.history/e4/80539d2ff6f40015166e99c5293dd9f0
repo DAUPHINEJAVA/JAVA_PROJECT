@@ -1,0 +1,144 @@
+<%-- 
+    Document   : achatProjet
+    Created on : Jan 10, 2015, 3:45:02 PM
+    Author     : root
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<h2>Détails de votre commande et paiement</h2>
+<c:if test="${panier.size() > 0}">
+
+    <table class="table table-responsive table-striped" >
+        <thead > <h5>Détails de votre commande </h5></thead>
+    <tbody> 
+        <tr>
+            <th># </th> 
+            <th>Intitulé </th>
+            <th>Licence </th>
+            <th>Prix HT (&euro;)</th>
+            <th>Supprimer</th>
+        </tr>
+
+        <c:forEach items="${panier}" var = "projet" >
+            <tr>
+                <td> ${projet.idProjet}</td>
+                <td> ${projet.nomProjet} </td>
+                <td>${projet.licence}</td>
+                <td> ${projet.getPrixHt()} </td>
+                <td> <span class="btn btn-warning glyphicon glyphicon-remove remove-item" id="${projet.idProjet}remove-item" title="Supprimer" ></span> </td>
+            </tr>
+        </c:forEach>
+    </tbody>
+    <tfoot>
+        <tr>
+            <th> Total HT </th>
+            <th></th>
+            <th></th>
+            <th>${totalHt}</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th> TVA (20%) </th>
+            <th></th>
+            <th></th>
+            <th>${totalTva}</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th> Total TTC </th>
+            <th></th>
+            <th></th>
+            <th>${totalTtc}</th>
+            <th style="font-weight: bolder"></th>
+        </tr>
+    </tfoot>
+</table>
+
+<c:if test="${user != null}">
+   <h4> Vos informations: </h4>
+    <h5> Vérification de l'email: </h5>
+    <div class = "row">
+        <div class="form-group col-sm-6">
+            <label for="user">Email :</label> 
+            <input type="text" value="${user.getMail()}" name="login" id="login" class="form-control" required/>
+        </div>
+    </div>
+    <br>
+
+    <div class = "row">
+        <div class="col-sm-3"> <button class="btn btn-danger glyphicon glyphicon-remove-circle" id="cancel-payment">Annuler</button> </div>
+    <div class="col-sm-3"> 
+    </div>
+<div class="col-sm-3"> 
+
+        <form action="payCart" method="POST">
+            <input type="hidden" name="panier" value="${panier}">
+            <input type="hidden" name="total" value="${total}">
+            <input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+        </form>
+
+    </div>  
+ </div>
+</c:if>
+<c:if test="${user == null}">
+    <div class = "row">
+         <div class="col-sm-6"> <button class="btn btn-danger glyphicon glyphicon-remove-circle" id="cancel-payment">Annuler</button> </div>
+    </div>
+<div class="row">
+        <div class="col-sm-6">
+<br>
+<br>
+<h4>Effectuer le paiement</h4>
+Afin de poursuivre votre paiement, veuillez vous inscrire ou vous connecter :<br/>
+<a href="signIn?redirect=cartList"><button class="btn btn-default" id="signIn">Se connecter</button></a> <a href="signUp?redirect=cartList"><button class="btn btn-default" id="signUp">S'inscrire</button></a>
+        </div>
+        <!--<div class="col-sm-6"> 
+            <form action="payCart" method="POST">
+                <input type="hidden" name="panier" value="${panier}">
+                <input type="hidden" name="total" value="${total}">
+                <input type="image" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
+            </form>
+
+        </div>  -->           
+
+    </div>      
+</div>
+</c:if>
+</c:if>
+<c:if test="${panier.size() == 0}">
+    <i>Aucun projet dans votre panier. </i>
+</c:if>
+<script >
+    $(document).ready(function () {
+        $("#cancel-payment").click(
+                function () {
+
+                    $.get("removeAllFromCart", function (data) {
+
+                        window.location.href = "/ecommerceDac-web";
+                    })
+                            .fail(function (data) {
+                                //alert(JSON.stringify(data));
+                                alert("Une erreur s'est produite!");
+                            });
+                });
+        $(".remove-item").click(
+                function () {
+                    var id = parseInt($(this).attr("id"));
+                    $.get("removeFromCart", {projet_id: id}, function (data) {
+                        $("#shopping-cart-count").text("(" + data.count + ")");
+                        window.location.href = "/ecommerceDac-web/cartList";
+                    })
+                            .fail(function (data) {
+                                //alert(JSON.stringify(data));
+                                alert("Une erreur s'est produite!");
+                            });
+                });
+        $("#signUp").click(function (event) {
+            event.preventDefault();
+            window.location.href = "/ecommerceDac-web/signUp";
+        });
+
+    });
+
+</script>

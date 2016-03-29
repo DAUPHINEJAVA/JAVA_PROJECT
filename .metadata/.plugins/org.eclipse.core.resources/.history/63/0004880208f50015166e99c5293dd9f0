@@ -1,0 +1,49 @@
+package app.ejb.implement;
+
+import java.util.List;
+
+import app.ejb.DAO.PublicationJpaController;
+import app.ejb.interfaces.GestionContratBeanRemote;
+import app.jpa.entities.Publication;
+
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
+/**
+ * Session Bean implementation class GestionContratBean
+ */
+@Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
+public class GestionContratBean implements GestionContratBeanRemote {
+	
+
+    @Resource
+    private EJBContext context;    
+    @PersistenceUnit(unitName="AppJPA")
+    private EntityManagerFactory emf;
+
+    /**
+     * Default constructor. 
+     */
+    public GestionContratBean() {
+        // TODO Auto-generated constructor stub
+    }
+    
+    
+    @Override
+	public List<Contrat> getallContrat() {
+	 
+    int max = 20;
+         //To change body of generated methods, choose Tools | Templates.
+	PublicationJpaController publicationDAO = new PublicationJpaController(context.getUserTransaction(),emf);
+	List<Publication> pub = publicationDAO.findIndexPublication(max);
+	return pub;
+	}
+
+}

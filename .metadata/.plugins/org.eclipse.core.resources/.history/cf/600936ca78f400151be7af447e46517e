@@ -1,0 +1,159 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+         <%@ page import="app.vue.servlets.utils.CategoryUtils"%>
+     <%@page import="javafx.util.Pair" %>
+         <%@page import="models.PanierItem" %>
+    <%@page import="java.util.List" %>
+        <%@page import="java.util.ArrayList" %>
+        <%@page import="utils.CartUtils" %>
+     <%    
+    CartUtils.initSession(session);
+    %>
+    <% List<PanierItem> panier = (List<PanierItem>) session.getAttribute("cart");%>
+     <%
+     	boolean connected = false;
+     	if(session.getAttribute("userEmailOk") != null)
+     		connected = true;
+     %>
+<header class="no-padding-bottom header-alt" style="padding-top: 0px;">	
+<div class="wrapper">
+		<!-- ============================================================= TOP NAVIGATION ============================================================= -->
+<nav class="top-bar animate-dropdown" style="margin-bottom: 40px;">
+    <div class="container">
+        <div class="col-xs-12 col-sm-6 no-margin">
+            <ul>
+                <li><a href="index.jsp">Home</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="contact.jsp">Contact Us</a></li>
+            </ul>
+        </div><!-- /.col -->
+
+        <div class="col-xs-12 col-sm-6 no-margin">
+            <ul class="right">
+            <%if(!connected){ %>
+                <li><a href="login.jsp">Sign In/Sign Up</a></li>
+                <%}else{ %>
+                <li><a href="account.jsp">My Account</a></li>
+                <%} %>
+                <%if(connected){ %>
+                <li><a href="LoginController?logout=1">Log Out</a></li>
+                <%} %>
+            </ul>
+        </div><!-- /.col -->
+    </div><!-- /.container -->
+</nav><!-- /.top-bar -->
+<!-- ============================================================= TOP NAVIGATION : END ============================================================= -->		<!-- ============================================================= HEADER ============================================================= -->
+
+    <div class="container no-padding">
+        
+        <div class="col-xs-12 col-md-3 logo-holder">
+			<!-- ============================================================= LOGO ============================================================= -->
+<div class="logo">
+	<a href="index.jsp">
+		<img src="logo.png" style="width: 240px; height: 90px; margin-top: -6px;" alt="DigitalDauphine"/>
+				</a>
+</div><!-- /.logo -->
+<!-- ============================================================= LOGO : END ============================================================= -->		</div><!-- /.logo-holder -->
+
+		<div class="col-xs-12 col-md-6 top-search-holder no-margin">
+			<div class="contact-row">
+    <div class="phone inline">
+        <i class="fa fa-phone"></i> (+33) 6 73 18 05
+    </div>
+    <div class="contact inline">
+        <i class="fa fa-envelope"></i> contact@<span class="le-color">digitaldauphine.fr</span>
+    </div>
+</div><!-- /.contact-row -->
+<!-- ============================================================= SEARCH AREA ============================================================= -->
+<div class="search-area">
+    <form>
+        <div class="control-group">
+            <input id="searchKeywords" class="search-field" placeholder="Search for item" style="width: 91%;" />
+            <a id="btnSearchHeader" class="search-button" style="cursor:pointer;"></a>    
+
+        </div>
+    </form>
+</div><!-- /.search-area -->
+<!-- ============================================================= SEARCH AREA : END ============================================================= -->		</div><!-- /.top-search-holder -->
+
+		<div class="col-xs-12 col-md-3 top-cart-row no-margin">
+			<div class="top-cart-row-container">
+    <!-- ============================================================= SHOPPING CART DROPDOWN ============================================================= -->
+    <div class="top-cart-holder dropdown animate-dropdown">
+        
+        <div class="basket"></div>
+            
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <div class="basket-item-count">
+                    <span class="count"><%= CartUtils.getItemNumber(panier) %></span>
+                    <img src="assets/images/icon-cart.png" alt="" />
+                </div>
+
+                <div class="total-price-basket"> 
+                    <span class="lbl">your cart:</span>
+                    <span class="total-price">
+                        <span class="sign">$</span><span class="value"><%= CartUtils.getTotalPrice(panier) %></span>
+                    </span>
+                </div>
+            </a>
+
+            <ul class="dropdown-menu">
+            <%if(!panier.isEmpty()){ %>
+            <%for(PanierItem p: panier){ %>
+                <li>
+                    <div class="basket-item">
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-4 no-margin text-center">
+                                <div class="thumb" style="border:none;">
+                                    <img alt="" style="max-width:50%;" src="data:image/jpeg;base64,<%=p.getProduct().getImage() %>" />
+                                </div>
+                            </div>
+                            <div class="col-xs-8 col-sm-8 no-margin">
+                                <div class="title"><%= p.getProduct().getName() %></div>
+                                <div class="price">$<%= p.getProduct().getPrice() * p.getQte() %> / <%=p.getQte() %> item(s)</div>
+                            </div>
+                        </div>
+                        <a class="close-btn notClickable delCartItemBtn" href="#" data-id="<%=p.getProduct().getId() %>" data-idprod="<%= request.getParameter("idProduct") %>"></a>
+                    </div>
+                </li>
+                <%}%>
+            	<li class="checkout">
+                    <div class="basket-item">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">
+                                <a href="cart.jsp" class="le-button inverse">View cart</a>
+                            </div>
+                            <div class="col-xs-12 col-sm-6">
+                                <a href="checkout.jsp" class="le-button">Checkout</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            <%}else{ %>
+                   <p style="font-size: 16px; margin: 15px;" class="alert alert-warning">No products in the cart.</p>
+                <%} %>
+            </ul>
+        </div><!-- /.basket -->
+    </div><!-- /.top-cart-holder -->
+</div><!-- /.top-cart-row-container -->
+<!-- ============================================================= SHOPPING CART DROPDOWN : END ============================================================= -->		</div><!-- /.top-cart-row -->
+
+	</div><!-- /.container -->
+	
+	<!-- ========================================= NAVIGATION ========================================= -->
+<nav id="top-megamenu-nav" class="megamenu-vertical animate-dropdown" style="margin-bottom: 35px;">
+    <div class="container">
+        <div class="yamm navbar">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mc-horizontal-menu-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div><!-- /.navbar-header -->
+            <div class="collapse navbar-collapse" id="mc-horizontal-menu-collapse">
+                <ul 
+<!-- ========================================= NAVIGATION : END ========================================= -->
+</header>
+<!-- ============================================================= HEADER : END ============================================================= -->		

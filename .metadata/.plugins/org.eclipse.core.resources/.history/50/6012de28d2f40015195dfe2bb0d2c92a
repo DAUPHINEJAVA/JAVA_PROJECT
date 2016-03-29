@@ -1,0 +1,114 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+     <%@page import="utils.CategoryUtils" %>
+     <%@page import="javafx.util.Pair" %>
+<!-- ========================================= SINGLE PRODUCT TAB : END ========================================= -->
+<footer id="footer" class="color-bg">
+    <div class="sub-form-row">
+        <div class="container">
+            <div class="col-xs-12 col-sm-8 col-sm-offset-2 no-padding">
+                <form role="form">
+                    <input id="inputNewsletter" placeholder="Subscribe to our newsletter" data-validate="required,email">
+                    <a id="subscribeBtn" href="" class="le-button" style="border-radius: 0 5px 5px 0; padding: 19px 31px 20px 31px; margin: 0 0 0 -5px;">Subscribe</a>
+                </form>
+            </div>
+        </div><!-- /.container -->
+    </div><!-- /.sub-form-row -->
+
+    <div class="link-list-row">
+        <div class="container no-padding">
+            <div class="col-xs-12 col-md-4 ">
+                <!-- ============================================================= CONTACT INFO ============================================================= -->
+<div class="contact-info">
+    <div class="footer-logo">
+    <img src="logo.svg" style="width: 350px; height: 150px; margin-top: -6px;" alt="DigitalDauphine"/>
+           </div><!-- /.footer-logo -->
+    
+    <p class="regular-bold"> Feel free to contact us via phone, email or just send us mail.</p>
+    
+    <p>
+        6 Rue Villebois Mareuil, 92400, Courbevoie
+    </p>
+    <p>
+    	06 29 12 19 03
+    </p>
+    
+    <div class="social-icons">
+        <h3>Get in touch</h3>
+        <ul>
+            <li><a href="#" class="fa fa-facebook"></a></li>
+            <li><a href="#" class="fa fa-twitter"></a></li>
+            <li><a href="#" class="fa fa-pinterest"></a></li>
+            <li><a href="#" class="fa fa-linkedin"></a></li>
+            <li><a href="#" class="fa fa-stumbleupon"></a></li>
+            <li><a href="#" class="fa fa-dribbble"></a></li>
+            <li><a href="#" class="fa fa-vk"></a></li>
+        </ul>
+    </div><!-- /.social-icons -->
+
+</div>
+<!-- ============================================================= CONTACT INFO : END ============================================================= -->            </div>
+
+            <div class="col-xs-12 col-md-8 no-margin">
+                <!-- ============================================================= LINKS FOOTER ============================================================= -->
+<div class="link-widget">
+    <div class="widget">
+        <h3>Find it fast  (Brands)</h3>
+        <ul>
+            <li><a href="SearchController?brand=Apple">Apple</a></li>
+            <li><a href="SearchController?brand=Samsung">Samsung</a></li>
+            <li><a href="SearchController?brand=Sony">Sony</a></li>
+            <li><a href="SearchController?brand=Nokia">Nokia</a></li>
+            <li><a href="SearchController?brand=Other">Other</a></li>
+        </ul>
+    </div><!-- /.widget -->
+</div><!-- /.link-widget -->
+
+<div class="link-widget">
+    <div class="widget">
+        <h3>Find it fast  (Category)</h3>
+        <ul>
+        <%for(Pair<Integer,String> t: CategoryUtils.getCatList()){ %>
+        <li><a href="SearchController?category=<%= t.getKey() %>"><%= t.getValue() %></a></li>
+        <%} %>
+
+        </ul>
+    </div><!-- /.widget -->
+</div><!-- /.link-widget -->
+
+<div class="link-widget">
+    <div class="widget">
+        <h3>Information</h3>
+        <ul>
+			<li><a href="#">About Us</a></li>
+            <li><a href="contact.jsp">Contact Us</a></li>
+            <li><a href="#">FAQs</a></li>
+        </ul>
+    </div><!-- /.widget -->
+</div><!-- /.link-widget -->
+<!-- ============================================================= LINKS FOOTER : END ============================================================= -->            </div>
+        </div><!-- /.container -->
+    </div><!-- /.link-list-row -->
+
+    <div class="copyright-bar">
+        <div class="container" style="margin-bottom: 25px;">
+            <div class="col-xs-12 col-sm-6 no-margin">
+                <div class="copyright">
+                    &copy; <a href="index.jsp">DigitalDauphine</a> - all rights reserved
+                </div><!-- /.copyright -->
+            </div>
+            <div class="col-xs-12 col-sm-6 no-margin">
+                <div class="payment-methods ">
+                    <ul>
+                        <li><img alt="" src="assets/images/payments/payment-visa.png"></li>
+                        <li><img alt="" src="assets/images/payments/payment-master.png"></li>
+                        <li><img alt="" src="assets/images/payments/payment-paypal.png"></li>
+                        <li><img alt="" src="assets/images/payments/payment-skrill.png"></li>
+                    </ul>
+                </div><!-- /.payment-methods -->
+            </div>
+        </div><!-- /.container -->
+    </div><!-- /.copyright-bar -->
+
+</footer><!-- /#footer -->
+<!-- ============================================================= FOOTER : END ============================================================= -->	</div><!-- /.wrapper -->

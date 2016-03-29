@@ -1,0 +1,3 @@
+browsers=<?xml version\="1.0" encoding\="UTF-8"?>\n<web-browsers current\="0">\n<system/>\n<external location\="/usr/bin/firefox" name\="Firefox"/>\n<external location\="/." name\="BrowserSim"/>\n</web-browsers>
+eclipse.preferences.version=1
+internalWebBrowserHistory=http\://localhost\:8080/AppVue/index.jsp|*|http\://localhost\:8080/AppVue/PublicationServlet|*|http\://localhost\:8080/AppVue/|*|file\:///home/dev1/Downloads/JAVA_PROJECT/web/readme.html|*|file\:/home/dev1/Downloads/JAVA_PROJECT/web/readme.html|*|

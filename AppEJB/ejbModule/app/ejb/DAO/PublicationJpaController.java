@@ -3,9 +3,13 @@ package app.ejb.DAO;
 import java.util.List;
 
 
+
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.UserTransaction;
 
 import app.ejb.DAO.exceptions.NonexistentEntityException;

@@ -1,0 +1,39 @@
+<%-- 
+    Document   : projet.jsp
+    Created on : Jan 3, 2015, 9:07:01 AM
+    Author     : dac
+--%>
+<%@ page pageEncoding="UTF-8" %>
+
+        <table id="listeProjets" class="table table-hover table-striped">
+            
+            <tbody>
+                <tr>
+                    <th>ID Projet</th>
+                    <th>Nom Projet</th>
+                    <th>Catégorie</th>
+                    <th>Prix (€)</th>
+                    <th>Visibilité</th>
+                </tr>
+
+            
+                <c:forEach items="${projets}" var="projet">
+                    <tr style="cursor:pointer" data-url="projet/${projet.getIdProjet()}">
+                        <td>${projet.getIdProjet()}</td>
+                        <td>${projet.getNomProjet()}</td>
+                        <td>${projet.getCategorie().getNomCategorie()}</td>
+                        <td>${projet.getPrix()}</td>
+                        <td>${projet.getVisibilite()}</td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+            
+        </table>
+
+        <script type="text/javascript">
+            $(document).ready(function($) {
+                $('#listeProjets tr').click(function() {
+                    window.location.href = $(this).data("url");
+                });
+            });
+        </script>

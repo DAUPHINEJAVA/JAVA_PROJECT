@@ -1,0 +1,84 @@
+<%-- 
+    Document   : projet.jsp
+    Created on : Jan 3, 2015, 9:07:01 AM
+    Author     : dac
+--%>
+<%@ page pageEncoding="UTF-8" %>
+
+        <c:if test="${info != null}">
+            <h2 class="bg-info"><c:out value="${info}"/></h2>
+        </c:if>
+
+        <form method="POST" action="admin/editProject/${projet.getIdProjet()}" class="form-group-sm" role="form">
+
+            <hr>
+            <p class="text-center text-info"><strong>Nom du projet</strong></p>
+
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <input type="text" name="nom" id="nom" class="form-control" value="${projet.getNomProjet()}" required/>
+                </div>
+            </div><div style="clear:both"></div>
+
+            <hr>
+            <p class="text-center text-info"><strong>Image du projet</strong></p>
+
+            <img src="${projet.getImagePath()}" alt="image" style="border:1px inset white; max-width:100%; height:auto;">
+
+            <hr>
+            <p class="text-center text-info"><strong>Informations</strong></p>
+
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="form-group">
+
+                    <label for="description">Description:</label> 
+                    <textarea name="description" id="description" class="form-control" style="resize:none; height:6em;">${projet.getDescription()}</textarea>
+                    <br/>
+                    <label for="prix">Prix (€):</label> 
+                    <input type="number" name="prix" id="prix" class="form-control" value="${projet.getPrix()}" required/>
+                    <br/>
+                    <label for="date">Date d'ajout:</label> 
+                    <input type="text" name="date" id="date" class="form-control" value="${dateProjet}" readonly required/>
+                    <br/>
+                    <label for="categorie">Catégorie:</label>
+                    <select name="categorie" id="categorie" required>
+                        <c:forEach items="${listeCategories}" var="cat">
+                            <option value="${cat.getIdCat()}"
+                                <c:if test="${cat.getIdCat() == projet.getCategorie().getIdCat()}">
+                                    selected
+                                </c:if>
+                            >${cat.getNomCategorie()}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+            </div><div style="clear:both"></div>
+            
+            <hr>
+            <p class="text-center text-info"><strong>Vente</strong></p>
+            
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="licence">Licence:</label> 
+                    <input type="text" name="licence" id="licence" class="form-control" value="${projet.getLicence()}" readonly required/>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <label for="visibilite">Visibilité:</label> 
+                    <select name="visibilite" id="visibilite" required>
+                        <option value="ONLINE" <c:if test="${projet.getVisibilite().equals('ONLINE')}">selected</c:if>>ONLINE</option>
+                        <option value="OFFLINE" <c:if test="${projet.getVisibilite().equals('OFFLINE')}">selected</c:if>>OFFLINE</option>
+                    </select>
+                </div>
+            </div><div style="clear:both"></div>
+
+            <hr>
+
+            <input type="submit" name="modifier" value="modifier" class="btn btn-success btn-lg btn-block"/>
+
+            <hr>
+
+        </form>
+

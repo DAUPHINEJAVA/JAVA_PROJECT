@@ -1,0 +1,20 @@
+package app.ejb.implement;
+
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+/**
+ * Session Bean implementation class GestionContratBean
+ */
+@Stateless
+@LocalBean
+public class GestionContratBean implements GestionContratBeanRemote {
+
+    /**
+     * Default constructor. 
+     */
+    public GestionContratBean() {
+        // TODO Auto-generated constructor stub
+    }
+
+}

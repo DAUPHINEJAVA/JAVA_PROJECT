@@ -1,0 +1,126 @@
+<%-- 
+    Document   : listProjects
+    Created on : Jan 9, 2015, 6:14:12 PM
+    Author     : root
+--%>
+
+<div class="gallery" style="padding-top: 75px" >
+    <h1>Galerie des projets</h1>
+    <div class="row " >
+        <div class="col-sm-3 " style="background-color: #F4F4F4">
+            <h2>Filtre:</h2>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="cat" class="col-sm-2 control-label">Catégorie</label>
+                    <div class="col-sm-10">
+                        <select name="cat" id="cat"style="position:relative; right: -20px">
+                            <option value="-1">--Tout--</option>
+                            <c:forEach items="${categories}" var="cat">
+                                <option value="${cat.idCat}">${cat.nomCategorie}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="language" class="col-sm-2 control-label">Langage</label>
+                    <div class="col-sm-10">
+                        <select name="language" id="language"style="position:relative; right: -20px">
+                            <option>--Tout--</option>
+                            <option>C</option>
+                            <option>Java</option>
+                            <option>J2EE</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="licence" class="col-sm-2 control-label">Licence</label>
+                    <div class="col-sm-10">
+                        <select name="licence" id="licence" style="position:relative; right: -20px">
+                            <option>--Tout--</option>
+                            <option>Public</option>
+                            <option>Proprietaire</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="min" class="col-sm-2 control-label">Prix min</label>
+                    <div class="col-sm-3">
+                        <input name="min" id="min" type="number" min="0"  style="position:relative; right: -20px"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="max" class="col-sm-2 control-label">Prix max</label>
+                    <div class="col-sm-3">
+                        <input name="max" id="min" type="number" min="0" style="position:relative; right: -20px"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-xs-offset-2">
+                        <button type="submit" class="btn btn-success">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-9">
+            <c:forEach items="${projects}" var="proj">
+                <div class="col-sm-5" >
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <a  href="projet/${proj.getIdProjet()}">
+                                ${proj.getNomProjet()}: ${proj.getCategorie().getNomCategorie()}
+
+
+                                <img src="${proj.getImagePath()}" class="img-responsive " title="${proj.getNomProjet()}" />
+
+                                <div class="desc-gallery">
+                                    ${proj.description}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="panel-footer"> 
+                            <c:choose>
+                                <c:when test="${proj.prixTtc eq '0,00'}" >
+                                    <a class="btn btn-primary "  href="download/${proj.idProjet}"> 
+
+                                        Télecharger gratuitement </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                    <button class="btn btn-success center-block add-to-cart" id="${proj.idProjet} + 'gal'">
+                                        <i class="glyphicon glyphicon-shopping-cart"> </i> ${proj.prixTtc}&euro; Ajouter au panier
+                                    </button>
+                                </c:otherwise>
+                            </c:choose>  
+
+                        </div>
+                    </div>
+                </div>
+            </c:forEach> 
+        </div>
+    </div>
+    <!--<ul class="thumbnails">
+    <c:forEach items="${projects}" var="proj">
+        <li class="li-gallery col-lg-2 col-md-2 col-sm-3 col-xs-4">
+            <div class="rel">
+                <a class="thumbnail" href="projet/${proj.getIdProjet()}">
+                    <img src="${proj.getImagePath()}" title="${proj.getNomProjet()}" />
+                    <div class="desc-gallery">
+        ${proj.getNomProjet()}
+        <br /> ${proj.getCategorie().getNomCategorie()}
+        <br /> ${proj.getPrixTtc()} &euro;
+    </div>
+</a>
+        <c:if test="${user!=null&&user.getTypeUser()=='ADMIN'}">
+            <a href="admin/showProject/${proj.getIdProjet()}">
+                <img src="img/pencil.png" class="imgbtn icon32 abs-bottom-right">
+            </a>
+        </c:if>
+    </div>
+</li>
+    </c:forEach>
+</ul>-->
+</div>
+<script>
+    $("#content").removeClass("home");
+</script>

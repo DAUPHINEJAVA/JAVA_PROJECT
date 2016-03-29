@@ -1,0 +1,179 @@
+package app.vue.servlets;
+import java.io.IOException;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import app.ejb.interfaces.*;
+import app.jpa.entities.*;
+import app.vue.servlets.utils.Base64Encode;
+
+@WebServlet(name="ServletProduct", urlPatterns={"/ProductController"}, description="Controller of Products")
+public class ContratServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    public ContratServlet() {
+        super();
+    }
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ContratBean contratBean = new ContratBean();
+		String idContratStr = request.getParameter("idContrat");
+		String page = "/Contrat.jsp";
+		int idContrat = 0;
+		try
+		{
+			idContrat = Integer.parseInt(idContratStr);
+
+		}
+		catch(NumberFormatException e)
+		{
+			response.sendRedirect("/failed.jsp");
+		}
+		request.setAttribute("Contrat", contratBean.getContratById(idContrat));
+		request.getRequestDispatcher(page).forward(request, response);
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String id = request.getParameter("idContrat");
+		String qte = request.getParameter("qte");
+		String cartItemId = request.getParameter("cartItemId");
+		ContratBean contratBean = new ContratBean();
+		Contrat c = null;
+		List<PanierItem> panier;
+		String updateCart = request.getParameter("updateCart");
+		String newQte = request.getParameter("newQte");
+		panier = (List<PanierItem>) request.getSession().getAttribute("cart");
+		String idProdUpdate = request.getParameter("idProdUpdate");
+		String updateVal = request.getParameter("updateVal");
+		String idProdUpdatePending = request.getParameter("idProdUpdatePending");
+		
+		if(request.getParameter("imageUrl") != null)
+		{
+			// TODO: for test purpose... must be changed to dynamic url
+			String imageUrl = "/Users/mouradhasnaoui/Desktop/ImagesProduis/"+request.getParameter("imageUrl");
+			String productName = request.getParameter("product_name");
+			String brandInput = request.getParameter("brand_input");
+			String categoryInput = request.getParameter("category_input");
+			String priceInput = request.getParameter("price_input");
+			String salePrice = request.getParameter("salePriceInput");
+			String shortDescription = request.getParameter("shortDescription");
+			String longDescription = request.getParameter("longDescription");
+			String qteInput = request.getParameter("qteInput");
+			String idUser = request.getParameter("idUserInput");
+			
+			
+			Product prod = new Product();
+			prod.setActive(false);
+			prod.setPending(true);
+			prod.setCategory(brandInput);
+			prod.setCatType(Integer.parseInt(categoryInput));
+			prod.setDate_MV(new Date(Calendar.getInstance().getTime().getTime()));
+			prod.setDescription(longDescription);
+			prod.setShort_description(shortDescription);
+			prod.setId_user(Integer.parseInt(idUser));
+			prod.setImage(Base64Encode.encode(imageUrl));
+			prod.setName(productName);
+			prod.setPrice(Double.parseDouble(priceInput));
+			prod.setSale_price(Double.parseDouble(salePrice));
+			prod.setQte(Integer.parseInt(qteInput));
+			if(productDao.addProduct(prod))
+			{
+				request.setAttribute("productAdded", true);
+				request.getRequestDispatcher("/account.jsp").forward(request, response);
+
+			}
+			else
+				response.sendRedirect("failed.jsp");
+			
+			return;
+		}
+		if(idProdUpdate != null)
+		{
+			p = productDao.getProductById(Integer.parseInt(idProdUpdate));
+			if(updateVal.equals("1"))
+				p.setActive(true);
+			else if(updateVal.equals("0"))
+				p.setActive(false);
+			productDao.updateProduct(p);
+			return;
+		}
+		
+		if(idProdUpdatePending != null)
+		{
+			p = productDao.getProductById(Integer.parseInt(idProdUpdatePending));
+			p.setPending(false);
+			p.setActive(true);
+			productDao.updateProduct(p);
+			return;
+		}
+
+		if(updateCart != null)
+		{
+			PanierItem pi = panier.get(Integer.parseInt(updateCart));
+			pi.setQte(Integer.parseInt(newQte));
+			panier.set(Integer.parseInt(updateCart), pi);
+			request.getSession().setAttribute("cart", panier);
+			return;
+		}
+		
+		if(!id.equals("null") && !id.equals("cart"))
+			p = productDao.getProductById(Integer.parseInt(id));
+		boolean found = false;
+		int piToDelete = 0;
+		if(cartItemId != null)
+		{
+			for(PanierItem pi : panier)
+			{
+				if(cartItemId.equals(String.valueOf(pi.getProduct().getId()))){
+					found = true;
+					piToDelete = panier.indexOf(pi);
+					break;
+				}
+			}
+			if(found)
+			{
+				panier.remove(piToDelete);
+				if(id.equals("cart"))
+				{
+					request.getSession().setAttribute("cart", panier);
+					return;
+				}
+				request.setAttribute("cart", panier);
+				if(!id.equals("null"))
+				{
+					request.setAttribute("prod", p);
+					 request.setAttribute("idProduct", id);
+					 doGet(request,response);	
+				}
+				else
+				{
+					request.getRequestDispatcher("/index.jsp").forward(request, response);
+				}
+				 
+			}
+
+		}
+		else
+		{
+			int quantite = Integer.parseInt(qte);
+			 PanierItem pi = new PanierItem();
+			 pi.setProduct(p);
+			 pi.setQte(quantite);
+			 panier.add(pi);
+			 
+			 request.setAttribute("cart", panier);
+			 request.setAttribute("prod", p);
+			 request.setAttribute("idProduct", id);
+			 doGet(request,response);
+		}
+		
+	}
+
+}

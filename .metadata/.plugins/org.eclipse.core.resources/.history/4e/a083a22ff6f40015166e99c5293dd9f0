@@ -1,0 +1,93 @@
+<%-- any content can be specified here e.g.: --%>
+<%@ page pageEncoding="UTF-8" %>
+</div>
+<footer > <span class="center-block" style="position:relative; top:50px;margin-left: 200px " >&copy; Ensimag 2014</span></footer>
+<script >
+    $(document).ready(function () {
+        // add to cart
+        $(".add-to-cart").click(
+                function () {
+                    // project id
+                    var id = parseInt($(this).attr("id"));
+                    $("#search-result").removeClass("hidden");
+                    //alert(id);
+                    $.get("addToCart", {projet_id: id}, function (data) {
+                        // $("#shopping-cart-count").text("(" + data.count + ")"); 
+                        if (data.success === true) {
+                            $("#shopping-cart-count").text("(" + data.count + ")");
+                            //window.location.href = "/ecommerceDac-web";
+                        }
+                        else {
+                            alert("Ce projet n'est plus disponible en télechargment");
+                        }
+                        //alert(JSON.stringify(data.success));
+                    })
+                            .fail(function (data) {
+                                //alert(JSON.stringify(data));
+                                alert("Une erreur s'est produite lors de l'ajout au panier! ");
+                            });
+                });
+        //view cart items
+        $("#shopping-cart").click(function () {
+            //if($("#shopping-cart-count").tex
+            //t() !== "(0)"){
+            window.location.href = "/ecommerceDac-web/cartList";
+            // }
+        });
+        //get categories list
+        $.get("listCat", function (data) {
+
+            //for( var cat in data.categories){
+
+            $("#homeCat").empty();
+            for (var i = 0; i < data.categories.length; i++) {
+                $("#homeCat").append("<li style='padding: 10px'><a href='listProjects?cat=" + data.categories[i].id + " '> " + data.categories[i].name + "</a></li>")
+            }
+            //}
+        });
+        $("#searchProjet").click(function () {
+            var name = $("#inputSearch").val();
+            window.location.href = "listProjects?name=" + name;
+        });
+        //autocompletion
+
+        $("#inputSearch").keyup(function () {
+            if ($('#inputSearch').val().length > 0) {
+                var term = $('#inputSearch').val();
+               
+                $("#search-result").removeClass("hidden");
+                $.get("search", {name: term})
+                        .success(function (data) {
+                            $("#search-result").empty();
+                               //alert(JSON.stringify(data.projets));
+                             var res ="";
+                            for (var i = 0; i < data.projets.length; i++) {
+                               res = res + "<li style='padding: 10px; list-style:none'><a href='projet/" + data.projets[i].id + " '> " + data.projets[i].name + "</a></li>";
+                            }
+                         $("#search-result").html(res);
+                        
+                        })
+                .fail(function () {
+
+                });
+            }
+            else {
+                $("#search-result").addClass("hidden");
+            }
+        });
+
+        //menu navigation highlighting
+        var url = window.location.pathname;
+        // exclude /ecommerceDac-web at the begining :18 characters
+        url = url.substring(18);
+
+        $('.navbar-nav > li').removeClass('active');
+        $('.navbar-nav > li a[href="' + url + '"]').parent().addClass('active');
+
+
+    });
+
+</script>
+</body>
+
+</html>

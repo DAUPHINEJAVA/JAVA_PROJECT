@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.transaction.UserTransaction;
 
 import app.ejb.DAO.exceptions.NonexistentEntityException;
@@ -38,9 +40,9 @@ public class ActionJpaController {
 			em.close();
 		}
 	}
-	
 
-	public void create(Action action) throws RollbackFailureException, Exception {
+	public void create(Action action) throws RollbackFailureException,
+			Exception {
 
 		EntityManager em = null;
 		try {
@@ -52,7 +54,9 @@ public class ActionJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			throw ex;
 		} finally {
@@ -62,13 +66,14 @@ public class ActionJpaController {
 		}
 	}
 
-	public void edit(Action action)
-			throws NonexistentEntityException, RollbackFailureException, Exception {
+	public void edit(Action action) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
 		EntityManager em = null;
 		try {
 			utx.begin();
 			em = getEntityManager();
-			Action persistentAction = em.find(Action.class, action.getIdContrat());
+			Action persistentAction = em.find(Action.class,
+					action.getIdContrat());
 
 			List<Action> allAction = findActionEntities();
 
@@ -76,7 +81,7 @@ public class ActionJpaController {
 
 				if (action.getIdContrat() == action.getIdContrat()) {
 
-					destroy(action.getIdUser());
+					destroy(action.getIdContrat());
 					create(action);
 
 				}
@@ -86,13 +91,16 @@ public class ActionJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			String msg = ex.getLocalizedMessage();
 			if (msg == null || msg.length() == 0) {
-				int id = action.getIdUser();
+				int id = action.getIdContrat();
 				if (findAction(id) == null) {
-					throw new NonexistentEntityException("The Action with id " + id + " no longer exists.");
+					throw new NonexistentEntityException("The Action with id "
+							+ id + " no longer exists.");
 				}
 			}
 			throw ex;
@@ -103,7 +111,8 @@ public class ActionJpaController {
 		}
 	}
 
-	public void destroy(int id) throws NonexistentEntityException, RollbackFailureException, Exception {
+	public void destroy(int id) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
 		EntityManager em = null;
 		try {
 			utx.begin();
@@ -113,7 +122,8 @@ public class ActionJpaController {
 				action = em.getReference(Action.class, id);
 				action.getIdContrat();
 			} catch (EntityNotFoundException enfe) {
-				throw new NonexistentEntityException("The Action with id " + id + " no longer exists.", enfe);
+				throw new NonexistentEntityException("The Action with id " + id
+						+ " no longer exists.", enfe);
 			}
 
 			em.remove(action);
@@ -122,7 +132,9 @@ public class ActionJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			throw ex;
 		} finally {
@@ -136,11 +148,13 @@ public class ActionJpaController {
 		return findActionEntities(true, -1, -1);
 	}
 
-	public List<Action> findMembreSocieteEntities(int maxResults, int firstResult) {
+	public List<Action> findMembreSocieteEntities(int maxResults,
+			int firstResult) {
 		return findActionEntities(false, maxResults, firstResult);
 	}
 
-	private List<Action> findActionEntities(boolean all, int maxResults, int firstResult) {
+	private List<Action> findActionEntities(boolean all, int maxResults,
+			int firstResult) {
 		EntityManager em = getEntityManager();
 		try {
 			CriteriaQuery cq = em.getCriteriaBuilder().createQuery();

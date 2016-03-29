@@ -1,0 +1,71 @@
+<%-- 
+    Document   : Upload
+    Created on : Jan 9, 2015, 7:51:04 PM
+    Author     : root enctype="multipart/form-data"
+--%>
+
+<h1>Chargement d'un nouveau projet</h1>
+<form method="POST" action="uploadServlet" enctype="multipart/form-data" class="form-group-sm col-sm-6"  role="form">
+
+    <div class="form-group">
+        <label for="nom_projet">Nom du projet:</label> 
+        <input type="text" name="nom_projet" id="nom_projet" placeholder="Simulator 3000" class="form-control" required/>
+    </div>
+    <div class="form-group">
+        <label for="description">Description : </label> 
+        <input type="text" name="description" id="description" placeholder="Simulator 3000 est le leader des logiciels de simulation mathématique au sein du domaine éducatif" class="form-control" required/>
+    </div>
+    <div class="form-group">
+        <label for="licence">Licence : </label><br>
+        <input type="radio" name="licence" id="proprietaire" value="Propriétaire" />
+        <label for="proprietaire" class="radio-inline">Propriétaire</label><br/>
+        <input type="radio" name="licence" id="mit" value="MIT" />
+        <label for="mit" class="radio-inline">MIT</label><br/>
+        <input type="radio" name="licence" id="bsd" value="BSD" />
+        <label for="bsd" class="radio-inline">BSD</label>
+    </div>
+    <div class="form-group">
+        <label for="visibilite">Visibilité : </label> <br>
+        <input type="radio" name="visibilite" id="online" value="ONLINE" />
+        <label for="online" class="radio-inline">ONLINE</label> <br/>
+        <input type="radio" name="visibilite" id="offline" value="OFFLINE" />
+        <label for="offline" class="radio-inline">OFFLINE</label> <br/>
+    </div>
+    <div class="form-group">
+        <label for="prix">Prix : </label> 
+        <input type="number" name="prix" id="prix" placeholder="2000" class="form-control" required/>
+    </div>
+    <div class="form-group">
+        <label for="categorie">Catégorie:</label>
+        <select name="categorie" id="categorie" required>
+            <c:forEach items="${listeCategories}" var="cat">
+                <option value="${cat.getIdCat()}"
+                        <c:if test="${cat.getIdCat() == projet.getCategorie().getIdCat()}">
+                            selected
+                        </c:if>
+                        >${cat.getNomCategorie()}</option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="password">Langage de programmation : </label> 
+        <input type="text" name="langage" id="langage" placeholder="Java" class="form-control" required/>
+    </div>             
+    <div class="form-group">
+        <label for="project">Select project file (.zip/tar) :  </label> 
+        <input type="file" name="filetoupload"> </br>
+    </div>
+
+    <div class="form-group">
+        <label for="picture">Select project picture (.gif/png/jpg/jpeg) :  </label> 
+        <input type="file" name="picturetoupload"> </br>
+    </div>
+
+    <input type="submit" name="valider" value="Valider" class="btn btn-success btn-lg btn-block"/>
+</form>
+
+<c:if test="${not empty format}">
+    <script>
+        alert("Format du projet non pris en charge");
+    </script>
+</c:if>      

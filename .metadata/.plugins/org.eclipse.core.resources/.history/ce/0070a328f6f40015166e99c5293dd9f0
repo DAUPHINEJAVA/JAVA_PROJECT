@@ -1,0 +1,10 @@
+<%-- 
+    Document   : index
+    Created on : Dec 22, 2014, 4:47:16 PM
+    Author     : dac
+--%>
+<%@ page pageEncoding="UTF-8" %>
+
+        <h5 class="bg-info">Une erreur s'est produite lors du chargement de la page. Nous nous
+         excusons pour le désagrement occasionné. Vous pouvez contacter l'administrateur (admin@ecommerce.fr) pour nous signaler le problème</h5>
+

@@ -8,4 +8,5 @@ import app.jpa.entities.Contrat;
 public interface ContratBeanRemote {
 
 	public void creationContrat(Contrat contrat);
+	
 }

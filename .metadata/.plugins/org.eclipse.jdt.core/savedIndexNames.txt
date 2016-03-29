@@ -1,0 +1,7 @@
+INDEX VERSION 1.127+/home/dev1/Downloads/JAVA_PROJECT/.metadata/.plugins/org.eclipse.jdt.core
+4124132855.index
+1014362785.index
+3099794957.index
+874326997.index
+3645397279.index
+1100727625.index

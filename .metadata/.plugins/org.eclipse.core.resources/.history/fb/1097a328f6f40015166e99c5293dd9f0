@@ -1,0 +1,9 @@
+<%-- 
+    Document   : index
+    Created on : Dec 22, 2014, 4:47:16 PM
+    Author     : dac
+--%>
+<%@ page pageEncoding="UTF-8" %>
+
+        <h5 class="bg-info">La page ou la ressource demandée n'existe pas.</h5>
+

@@ -1,0 +1,166 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    <%
+    if(session.getAttribute("userEmailOk") != null)
+    	response.sendRedirect("index.jsp");
+    %>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+ 
+	</head>
+<body>
+	
+	<jsp:include page="Header.jsp" />
+	<div class="wrapper">
+<main id="authentication" class="inner-bottom-md">
+	<div class="container">
+		<div class="row">
+		
+			<div class="col-md-6">
+				<section class="section sign-in inner-right-xs">
+					<h2 class="bordered">Sign In</h2>
+					<p>Hello, Welcome to your account</p>
+
+					<form role="form" method="post" action="LoginController" class="login-form cf-style-1" style="margin-top:50px;">
+						<div class="field-row">
+                            <label>Email</label>
+                            <input type="text" class="le-input" name="email" data-validate="required,email" <%if(request.getAttribute("mailInput") != null){ %>value="<%= request.getAttribute("mailInput")%>"<%} %>>
+                        </div><!-- /.field-row -->
+
+                        <div class="field-row">
+                            <label>Password</label>
+                            <input type="password" class="le-input" name="password" data-validate="required,min(5)">
+                        </div><!-- /.field-row -->
+
+                            <input type="hidden" class="le-input" name="hiddensignin">
+
+                        <div class="field-row clearfix">
+                        	<span class="pull-left">
+                        		<a href="#" class="content-color bold">Forgotten Password ?</a>
+                        	</span>
+                        </div>
+
+                        <div class="buttons-holder">
+                            <button type="submit" class="le-button huge">Sign In Now</button>
+                        </div><!-- /.buttons-holder -->
+					</form><!-- /.cf-style-1 -->
+					
+					<h2 class="semi-bold" style="margin-top:50px;">Sign up today and you'll be able to :</h2>
+
+					<ul class="list-unstyled list-benefits">
+						<li><i class="fa fa-check primary-color"></i> Speed your way through the checkout</li>
+						<li><i class="fa fa-check primary-color"></i> Track your orders easily</li>
+						<li><i class="fa fa-check primary-color"></i> Keep a record of all your purchases</li>
+					</ul>
+
+				</section><!-- /.sign-in -->
+			</div><!-- /.col -->
+
+			<div class="col-md-6">
+				<section class="section register inner-left-xs">
+					<h2 class="bordered">Create New Account</h2>
+					<p>Create your own DigitalDauphine account</p>
+
+					<form role="form" method="post" action="LoginController" class="register-form cf-style-1">
+						<div class="field-row">
+                            <label>First name</label>
+                            <input id="firstnameregister" type="text" class="le-input" name="firstnameregister" data-validate="required,min(2)">
+                        </div><!-- /.field-row -->
+<div class="field-row">
+                            <label>Last name</label>
+                            <input id="lastnameregister" type="text" class="le-input" name="lastnameregister" data-validate="required,min(2)">
+                        </div><!-- /.field-row -->
+                        <div class="field-row">
+                            <label>Phone number</label>
+                            <input id="phonenumberregister" type="text" class="le-input" name="phonenumberregister" data-validate="required,min(10),number">
+                        </div><!-- /.field-row -->
+                        <div class="field-row">
+                            <label>Address</label>
+                            <input id="adressregister" type="text" class="le-input" name="adressregister" data-validate="required,min(5)">
+                        </div><!-- /.field-row -->
+                        <div class="field-row">
+                            <label>Type:</label>
+                            <select id="userRoleRegister" name="userRoleRegister" class="form-control le-input">
+                            	<option selected value="1">Simple User</option>
+      							<option value="2">User/Seller</option>
+                        </select></div>
+                        <div class="field-row">
+                            <label>Email (Login)</label> <p id="alerthidden" class="alert alert-danger hide" >An account with this email already exists</p>
+                            <input id="emailregister" type="email" class="le-input" name="emailregister" data-validate="required,email">
+                        </div><!-- /.field-row -->
+                        <div class="field-row">
+                            <label>Password</label>
+                            <input id="pw1register" type="password" class="le-input" name="pw1register" data-validate="required,min(5)">
+                        </div><!-- /.field-row -->
+                        <div class="field-row">
+                            <label>Password (Confirmation)</label>
+                            <input id="pw2register" type="password" class="le-input" name="pw2register" data-validate="required,min(5)">
+                        </div><!-- /.field-row -->
+                        <div class="buttons-holder">
+                            <button id="btnregister" type="submit" class="le-button huge submit">Sign Up</button>
+                            <a id="btnregisterdisabled" href="#" class="disabledBtn huge hide">Sign Up</a>
+                        </div><!-- /.buttons-holder -->
+                        <input type="hidden" class="le-input" name="hiddenregister">
+					</form>
+
+				</section><!-- /.register -->
+
+			</div><!-- /.col -->
+
+		</div><!-- /.row -->
+	</div><!-- /.container -->
+</main><!-- /.authentication -->
+<!-- ========================================= MAIN : END ========================================= -->		<!-- ============================================================= FOOTER ============================================================= -->
+<jsp:include page="Footer.jsp" />
+
+<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+	
+		<%if(request.getAttribute("failedLog") != null){ %>
+		<script>
+		 $(document).ready(function() {
+			 $.notify(
+					  "Invalid username/password :(", 
+					  { className:"error",clickToHide: true,autoHide: false }
+					);
+			  });
+		</script>
+<%} %>
+</body>
+</html>

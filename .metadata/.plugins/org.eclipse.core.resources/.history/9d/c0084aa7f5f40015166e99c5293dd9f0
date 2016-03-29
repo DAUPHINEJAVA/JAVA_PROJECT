@@ -1,0 +1,518 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Servlets;
+
+import EJB.AchatProduitBeanLocal;
+import EJB.AchatProjetBeanLocal;
+import EJB.CommandeBeanLocal;
+import EJB.ProjetBeanLocal;
+import EJB.ProjetDetailsBeanLocal;
+import EJB.UtilisateurBeanLocal;
+import Model.AchatProduit;
+import Model.Commande;
+import Model.Projet;
+import Model.Utilisateur;
+import Model.ShoppingCart;
+import com.paypal.api.payments.Amount;
+import com.paypal.api.payments.Details;
+import com.paypal.api.payments.Item;
+import com.paypal.api.payments.ItemList;
+
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.PayerInfo;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentExecution;
+import com.paypal.api.payments.RedirectUrls;
+import com.paypal.base.rest.APIContext;
+import com.paypal.base.rest.PayPalRESTException;
+import com.paypal.base.rest.PayPalResource;
+import com.paypal.api.payments.Transaction;
+import com.paypal.base.ConfigManager;
+import com.paypal.base.rest.OAuthTokenCredential;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import org.apache.log4j.Logger;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * AchatPojetServlet est la classe qui gère le panier de l'utilisateur : ajout, 
+ * suppression, paiement.
+ * 
+ * @author dac
+ */
+@WebServlet(name = "AchatProjetServlet", urlPatterns = {"/payCart",
+    "/addToCart","/removeFromCart", "/removeAllFromCart", "/cartList",
+    "/signInCart","/downloadLinks/*"})
+public class AchatProjetServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger
+            .getLogger(AchatProjetServlet.class);
+
+    Map<String, String> map = new HashMap<String, String>();
+
+    private static final String SHOPPING_CART_SESSION_KEY
+            = "shoppingCart";
+    //AchatProjetBeanLocal achatProjetBean = lookupAchatProjetBeanLocal();
+    ShoppingCart shoppingCart = null;
+    @EJB
+    private ProjetDetailsBeanLocal projetBean;
+    @EJB
+    private ProjetBeanLocal projectBean;
+    @EJB
+    private UtilisateurBeanLocal utilisateurBean;
+    @EJB
+    private AchatProjetBeanLocal achatBean;
+    @EJB
+    private CommandeBeanLocal commandeBean;
+    @EJB
+    private AchatProduitBeanLocal achatProduitBean;
+    
+    /**
+     * initCreation() 
+     * @throws ServletException 
+     */
+    public void initCreation() throws ServletException {
+        // ##Load Configuration
+        // Load SDK configuration for
+        // the resource. This intialization code can be
+        // done as Init Servlet.
+        InputStream is = AchatProjetServlet.class
+                .getResourceAsStream("/sdk_config.properties");
+        try {
+            PayPalResource.initConfig(is);
+        } catch (PayPalRESTException e) {
+            LOGGER.fatal(e.getMessage());
+        }
+
+    }
+
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    /*protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+     throws ServletException, IOException {
+     response.setContentType("text/html;charset=UTF-8");
+     try (PrintWriter out = response.getWriter()) {
+           
+     out.println("<!DOCTYPE html>");
+     out.println("<html>");
+     out.println("<head>");
+     out.println("<title>Servlet AchatProjetServlet</title>");            
+     out.println("</head>");
+     out.println("<body>");
+     out.println("<h1>Servlet AchatProjetServlet at " + request.getContextPath() + "</h1>");
+     out.println("</body>");
+     out.println("</html>");
+     }
+     }*/
+
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        shoppingCart = (ShoppingCart) request.getSession()
+                .getAttribute(SHOPPING_CART_SESSION_KEY);
+        if (shoppingCart == null) {
+            shoppingCart = new ShoppingCart();
+            request.getSession()
+                    .setAttribute(SHOPPING_CART_SESSION_KEY, shoppingCart);
+        }
+        String path = request.getServletPath();
+        int id = 0;
+        switch (path) {
+            case "/payCart":
+                payCart(request, response);
+                break;
+            case "/addToCart":
+                id = Integer.parseInt(request.getParameter("projet_id"));
+                boolean success = false;
+                int count = 0;
+                Projet projet = projetBean.getProjet(id);
+                if (shoppingCart.addProjetToCart(projet)) {
+                    success = true;
+                    count = shoppingCart.getCartCount();
+                } else {
+                    success = false;
+                }
+                response.setContentType("application/json;charset=UTF-8");
+                try (PrintWriter out = response.getWriter()) {
+                    /* TODO output your page here. You may use following sample code. */
+                    out.write("{\"success\": " + success + ", \"count\": " + count + "}");
+                }
+                break;
+
+            case "/removeFromCart":
+                id = Integer.parseInt(request.getParameter("projet_id"));
+                shoppingCart.removeProjetFromCart(id);
+                response.setContentType("application/json;charset=UTF-8");
+                try (PrintWriter out = response.getWriter()) {
+                    out.write("{\"count\": " + shoppingCart.getCartCount() + "}");
+                }
+                break;
+
+            case "/cartList":
+                request.setAttribute("panier", shoppingCart.listOfProjetInCart());
+                request.setAttribute("totalHt", toCurrency(shoppingCart.getPrixTotalHt()));
+                request.setAttribute("totalTtc", toCurrency(shoppingCart.getPrixTotalTtc()));
+                request.setAttribute("totalTva", toCurrency(shoppingCart.getTotalTva()));
+                getServletContext().getRequestDispatcher("/WEB-INF/view/achatProjet.jsp").forward(request, response);
+                break;
+
+            case "/signInCart":
+                break;
+
+            case "/removeAllFromCart":
+                shoppingCart.remove();
+                response.setContentType("application/json;charset=UTF-8");
+                try (PrintWriter out = response.getWriter()) {
+                    out.write("{\"count\": " + shoppingCart.getCartCount() + "}");
+                }
+                break;
+
+            
+
+            default:
+                Utilisateur user = (Utilisateur) request.getSession().getAttribute("user");
+                if (user == null) {
+                    request.setAttribute("error", "Veuillez d'abord vous connecter !");
+                } else {
+                    try {
+                        id = Integer.parseInt(request.getPathInfo().substring(1));
+                    } catch (Exception e) {
+                        id = 0;
+                    }
+                    if(request.getParameter("status")!=null){
+                        if(request.getParameter("status").equals("cancel")){
+                     request.setAttribute("payment","false");
+                     request.setAttribute("error","Erreur");
+                        }
+                     }
+                    request.setAttribute("projets", achatBean.listProjetInCommand(id, user.getIdUser()));
+                }
+                getServletContext().getRequestDispatcher("/WEB-INF/view/download.jsp").forward(request, response);
+	    }
+    }
+    
+        
+    private String toCurrency(Double prix) {
+        Locale locale = new Locale.Builder().setLanguage("fr").setRegion("FR").build();
+        NumberFormat nf = NumberFormat.getInstance(locale);
+        nf.setMaximumFractionDigits(2);
+        nf.setMinimumFractionDigits(2);
+        return nf.format(prix);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        // processRequest(request, response);
+
+        if (request.getServletPath().equals("/payCart")) {
+            //Creation of the payment
+            payCart(request, response);
+            return;
+        }
+
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+    
+    
+    /**
+     * payCart() creates the payment and forwards to PayPal's payment page, using a cart
+     * that must be stored in the request
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException 
+     */
+    public void payCart(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        initCreation();
+        shoppingCart = (ShoppingCart) req.getSession()
+                .getAttribute(SHOPPING_CART_SESSION_KEY);
+        Double total = shoppingCart.getPrixTotalTtc();
+        ArrayList<Projet> projects = shoppingCart.listOfProjetInCart();
+
+        // ###AccessToken
+        // Retrieve the access token from
+        // OAuthTokenCredential by passing in
+        // ClientID and ClientSecret
+        APIContext apiContext = null;
+        String accessToken = null;
+      Integer idCommand = -1;
+        try {
+            accessToken = getAccessToken();
+            
+            // ### Api Context
+            // Pass in a `ApiContext` object to authenticate
+            // the call and to send a unique request id
+            // (that ensures idempotency). The SDK generates
+            // a request id if you do not pass one explicitly.
+            apiContext = new APIContext(accessToken);
+            // Use this variant if you want to pass in a request id
+            // that is meaningful in your application, ideally
+            // a order id.
+			/*
+             * String requestId = Long.toString(System.nanoTime(); APIContext
+             * apiContext = new APIContext(accessToken, requestId ));
+             */
+        } catch (PayPalRESTException e) {
+            req.setAttribute("error", e.getMessage());
+        }
+    
+        //the payment returns from the paypal website
+        if (req.getParameter("PayerID") != null) {
+            Payment payment = new Payment();
+              //if the user cancel
+            
+            if (req.getParameter("guid") != null){
+                payment.setId(map.get(req.getParameter("guid")));
+            }
+                    //if the user continue to payment
+           
+            PaymentExecution paymentExecution = new PaymentExecution();
+            paymentExecution.setPayerId(req.getParameter("PayerID"));
+            try {
+                payment.execute(apiContext, paymentExecution); 
+                Payment paymentInfo = Payment.get(apiContext, map.get(req.getParameter("guid")));
+               // 
+                //Project Recovery
+                List<Projet> projectsBuyed = new ArrayList<Projet>();
+                
+                for(Transaction t:paymentInfo.getTransactions()){
+                    for(Item item : t.getItemList().getItems()){
+                        Projet toAdd = projetBean.getProjet(Integer.parseInt(item.getSku()));
+                        projectsBuyed.add(toAdd);
+                    }
+                }
+                //User Recovery
+                Utilisateur buyer = (Utilisateur)req.getSession().getAttribute("user");
+              // Calendar CAL =javax.xml.bind.DatatypeConverter.parseDateTime(paymentInfo.getCreateTime());
+            long datePaiement = System.currentTimeMillis()/1000;
+                //Command creation
+            idCommand = -1;
+            if(paymentInfo.getState().equals("approved")){
+                Commande command = new Commande();               
+                command.setIdUser(buyer);
+                command.setTotalPaye(shoppingCart.getPrixTotalTtc());
+                command.setDateCommande(new Integer((int) datePaiement));
+                idCommand = commandeBean.createCommand(command);
+                //Buyed products creation
+                for(Projet project : projectsBuyed){
+                    AchatProduit achatProduit = new AchatProduit();
+                    achatProduit.setPrixPaye(project.getPrix().doubleValue());
+                    achatProduit.setProduit(project);
+                    achatProduit.setCommande(commandeBean.findCommand(idCommand));
+                    achatProduitBean.createAchatProduit(achatProduit);
+                    // les projets propriétaires ne sont plus disponibles en telechargement
+                    if(project.getLicence().equalsIgnoreCase("proprietaire")){
+                        project.setVisibilite("OFFLINE");
+                        projectBean.editProjet(project);
+                    }
+                }
+            }
+            
+            
+                System.out.println("downloadLinks with id: " + idCommand);
+                if(idCommand == -1){
+                    req.setAttribute("payment", "false");
+                }
+                else{
+                   req.setAttribute("payment", "true"); 
+                }
+              
+                 shoppingCart.remove();
+                getServletContext().getRequestDispatcher("/downloadLinks/"+idCommand.toString()).forward(req, resp);                
+            } catch (PayPalRESTException e) {
+                req.setAttribute("error", e.getMessage());
+            }
+        } else {
+
+            // ###Details
+            // Let's you specify details of a payment amount.
+            Details details = new Details();
+            Double subTotal = total/1.2;
+            Double TVA = subTotal*0.2 ;
+            NumberFormat formatter = new DecimalFormat("#0.00");
+            //System.out.println(formatter.format(subTotal));
+            details.setSubtotal(formatter.format(subTotal));
+            details.setTax(formatter.format(TVA));
+            // ###Amounts
+            // Let's you specify a payment amount.
+            Amount amount = new Amount();
+            amount.setCurrency("EUR");
+            // Total must be equal to sum of shipping, tax and subtotal.
+            amount.setTotal(formatter.format(total));
+            amount.setDetails(details);
+
+            //Defining all the items of the cart
+            ItemList il = new ItemList();
+            List<Item> items = new ArrayList<Item>();
+            for (Projet project : projects) {
+                Item toAdd = new Item();
+                Double price = project.getPrix().doubleValue();
+                Double priceHC = price/1.2;                
+                Double projectTVA = priceHC*0.2;
+                System.out.println("priceHC: " + priceHC);
+                System.out.println("priceTVA: " + projectTVA);
+                toAdd.setCurrency("EUR");
+                toAdd.setName(project.getNomProjet());
+                toAdd.setPrice(formatter.format(priceHC));
+                toAdd.setQuantity("1");
+                toAdd.setSku(project.getIdProjet().toString());
+                toAdd.setTax(formatter.format(projectTVA));
+                items.add(toAdd);
+            }
+            il.setItems(items);
+            // ###Transaction
+            // A transaction defines the contract of a
+            // payment - what is the payment for and who
+            // is fulfilling it. Transaction is created with
+            // a `Payee` and `Amount` types
+            Transaction transaction = new Transaction();
+            
+            transaction.setItemList(il);
+            transaction.setAmount(amount);
+            transaction
+                    .setDescription("Paiement du panier sur le site: www.ecommerce.fr");
+            // The Payment creation API requires a list of
+            // Transaction; add the created `Transaction`
+            // to a List
+            List<Transaction> transactions = new ArrayList<Transaction>();
+            transactions.add(transaction);
+
+            // ###Payer
+            // A resource representing a Payer that funds a payment
+            // Payment Method
+            // as 'paypal'
+            //Recovering the user to set his information
+            Utilisateur user = (Utilisateur) req.getSession().getAttribute("user");
+            Payer payer = new Payer();
+            payer.setPaymentMethod("paypal");
+            PayerInfo payerInfo = new PayerInfo();
+            
+            payer.setPayerInfo(payerInfo);
+            // ###Payment
+            // A Payment Resource; create one using
+            // the above types and intent as 'sale'
+            Payment payment = new Payment();
+            payment.setIntent("sale");        
+            
+            payment.setPayer(payer);
+            payment.setTransactions(transactions);
+            
+            // ###Redirect URLs
+            RedirectUrls redirectUrls = new RedirectUrls();
+            String guid = UUID.randomUUID().toString().replaceAll("-", "");
+            redirectUrls.setCancelUrl(req.getScheme() + "://"
+                    + req.getServerName() + ":" + req.getServerPort()
+                    + req.getContextPath() + "/downloadLinks/-1?status=cancel");
+            redirectUrls.setReturnUrl(req.getScheme() + "://"
+                    + req.getServerName() + ":" + req.getServerPort()
+                    + req.getContextPath() + "/payCart?guid=" + guid);
+            payment.setRedirectUrls(redirectUrls);
+
+            // Create a payment by posting to the APIService
+            // using a valid AccessToken
+            // The return object contains the status;
+            try {
+                Payment createdPayment = payment.create(apiContext);
+                LOGGER.info("Created payment with id = "
+                        + createdPayment.getId() + " and status = "
+                        + createdPayment.getState());
+                // ###Payment Approval Url
+                Iterator<Links> links = createdPayment.getLinks().iterator();
+                while (links.hasNext()) {
+                    Links link = links.next();
+                    if (link.getRel().equalsIgnoreCase("approval_url")) {
+                        req.setAttribute("redirectURL", link.getHref());
+                    }
+                }
+                req.setAttribute("response", Payment.getLastResponse());
+                map.put(guid, createdPayment.getId());
+            } catch (PayPalRESTException e) {
+                req.setAttribute("error", e.getMessage());
+            }
+            resp.sendRedirect((String) req.getAttribute("redirectURL"));
+        }
+
+    }
+
+    /**
+     * getAccessToken() creates an access token for the current client
+     *
+     * @return the created access token
+     * @throws PayPalRESTException
+     */
+    public static String getAccessToken() throws PayPalRESTException {
+        // ###AccessToken
+        // Retrieve the access token from
+        // OAuthTokenCredential by passing in
+        // ClientID and ClientSecret
+        String clientID = ConfigManager.getInstance().getValue("clientID");
+        String clientSecret = ConfigManager.getInstance().getValue(
+                "clientSecret");
+
+        return new OAuthTokenCredential(clientID, clientSecret)
+                .getAccessToken();
+    }
+
+}

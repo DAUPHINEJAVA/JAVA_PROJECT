@@ -1,0 +1,94 @@
+<%-- 
+    Document   : detailsProjet
+    Created on : Jan 2, 2015, 2:13:20 PM
+    Author     : dac
+--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<!--<html >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Details projet</title>
+        <link href='<c:url value="/css/bootstrap.css" />'  rel="stylesheet" type='text/css'>
+    </head>
+    <body style="max-width: 950px; margin:auto;">-->
+
+<!-- block details projet --> 
+<a href="" class="fa fa-home"> Accueil</a> <i class="fa fa-chevron-right">Projet</i>
+<div class="row" >
+    <c:choose>
+        <c:when test="${empty projet}">
+            Désolé ce projet n'existe pas.
+        </c:when>
+        <c:otherwise>
+
+            <div class="col-sm-3">
+                <h4>Catégorie </h4>
+                <c:out value = "${projet.categorie.nomCategorie}" />
+            </div>
+
+            <div class="col-sm-6">
+
+                <c:out value = "${projet.nomProjet}" />
+                <h4> Details </h4>
+                <i > Ajouté le ${projet.date}
+                </i>
+                <div class="row" style= "width:100%">
+                    <div class="col-sm-6" style= "width:100%">
+                        <a href="<c:url value = "${projet.imagePath}"/> "> <img style= "width:100%" src='<c:url value = "${projet.imagePath}"/>'/> </a>
+                    </div>
+                </div>
+                <br/>
+
+                <c:out value = "${projet.description}" />
+            </div>
+           
+                    
+                        <h5>Licence <c:out value ="${projet.licence}"/></h5>
+                        <h5>Langage <c:out value ="${projet.langageProgrammation}"/></h5>
+                        
+                       <c:if test = "${not empty projet.nbTelechargement and projet.nbTelechargement != 0}">
+                            <h5> Télechargé <c:out value ="${projet.nbTelechargement}"/> fois</h5>
+                        </c:if> 
+                            <br>
+                        <c:choose>
+                            <c:when test="${projet.visibilite eq 'ONLINE'}"> 
+                                
+                                <i class= "alert-success" >Disponible </i><br/><br/><br/>
+                                <c:choose>
+                                <c:when test="${projet.prixTtc eq '0,00'}" >
+                                    <a class="btn btn-primary "  href="download/${projet.idProjet}">Télecharger <br/> gratuitement </a>
+                                </c:when>
+                                 <c:otherwise>
+                                        <button class="btn btn-primary add-to-cart" id = "${projet.idProjet}projet"> <c:out value = "${projet.prixTtc}"/>&euro; 
+                                    <br/>
+                                    Ajouter au panier
+                                </button>
+                                 </c:otherwise>
+                                </c:choose>              
+                            </c:when>
+                            <c:otherwise>
+                                <i class= "alert-danger" >Non disponible</i>
+                            </c:otherwise>
+                        </c:choose>
+
+                    
+               
+        <c:if test="${user.getTypeUser().equals('ADMIN')}">
+            <br>
+            <br>
+            <div class="row" >
+                <a href="admin/showProject/${projet.getIdProjet()}">
+                    <button type="button" class="btn btn-danger">Modifier</button>
+                </a>
+            </div>
+        </c:if>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+<!-- /block details projet -->
+<!-- </body>
+</html>-->

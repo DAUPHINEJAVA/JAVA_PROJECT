@@ -1,0 +1,29 @@
+
+
+
+
+
+
+@WebServlet(name="ServletSearch", urlPatterns={"/SearchController"}, description="Controller of searching")
+public class SearchController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		ProductDao productDao = new ProductDaoBean();
+		List<Product> searchResult = new ArrayList<Product>();
+		String page = "/search.jsp";
+		
+		String searchKeywords = request.getParameter("searchKeywords");
+		String brand = request.getParameter("brand");
+		String category = request.getParameter("category");
+		
+		searchResult = productDao.getProductForSearchRequest(brand, searchKeywords, category);
+		request.setAttribute("searchResult", searchResult);
+		request.getRequestDispatcher(page).forward(request, response);
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+}

@@ -1,12 +1,18 @@
 package app.ejb.DAO;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 
 import app.ejb.DAO.exceptions.NonexistentEntityException;
 import app.ejb.DAO.exceptions.RollbackFailureException;
+import app.jpa.entities.Publication;
 import app.jpa.entities.User;
 
 public class UserJpaController {
@@ -28,7 +34,8 @@ public class UserJpaController {
 		return emf.createEntityManager();
 	}
 
-	public void create(User utilisateur) throws RollbackFailureException, Exception {
+	public void create(User utilisateur) throws RollbackFailureException,
+			Exception {
 
 		EntityManager em = null;
 		try {
@@ -40,7 +47,9 @@ public class UserJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			throw ex;
 		} finally {
@@ -50,21 +59,14 @@ public class UserJpaController {
 		}
 	}
 
-	/**
-	 * edit() permet de modifier un élément de la table Utilisateur de la bd.
-	 * 
-	 * @param utilisateur
-	 *            : élément à ajouter en bd
-	 * @throws NonexistentEntityException
-	 * @throws RollbackFailureException
-	 * @throws Exception
-	 */
-	public void edit(User utilisateur) throws NonexistentEntityException, RollbackFailureException, Exception {
+	public void edit(User utilisateur) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
 		EntityManager em = null;
 		try {
 			utx.begin();
 			em = getEntityManager();
-			User persistentUtilisateur = em.find(User.class, utilisateur.getIdUser());
+			User persistentUtilisateur = em.find(User.class,
+					utilisateur.getIdUser());
 
 			List<User> allUsers = findUtilisateurEntities();
 
@@ -82,13 +84,17 @@ public class UserJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			String msg = ex.getLocalizedMessage();
 			if (msg == null || msg.length() == 0) {
 				int id = utilisateur.getIdUser();
 				if (findUtilisateur(id) == null) {
-					throw new NonexistentEntityException("The utilisateur with id " + id + " no longer exists.");
+					throw new NonexistentEntityException(
+							"The utilisateur with id " + id
+									+ " no longer exists.");
 				}
 			}
 			throw ex;
@@ -99,17 +105,8 @@ public class UserJpaController {
 		}
 	}
 
-	/**
-	 * destroy() permet de supprimer un élément de la table Utilisateur de la
-	 * bd.
-	 * 
-	 * @param id
-	 *            :id de l'élément à supprimer
-	 * @throws NonexistentEntityException
-	 * @throws RollbackFailureException
-	 * @throws Exception
-	 */
-	public void destroy(int id) throws NonexistentEntityException, RollbackFailureException, Exception {
+	public void destroy(int id) throws NonexistentEntityException,
+			RollbackFailureException, Exception {
 		EntityManager em = null;
 		try {
 			utx.begin();
@@ -119,7 +116,8 @@ public class UserJpaController {
 				utilisateur = em.getReference(User.class, id);
 				utilisateur.getIdUser();
 			} catch (EntityNotFoundException enfe) {
-				throw new NonexistentEntityException("The utilisateur with id " + id + " no longer exists.", enfe);
+				throw new NonexistentEntityException("The User with id " + id
+						+ " no longer exists.", enfe);
 			}
 
 			em.remove(utilisateur);
@@ -128,7 +126,9 @@ public class UserJpaController {
 			try {
 				utx.rollback();
 			} catch (Exception re) {
-				throw new RollbackFailureException("An error occurred attempting to roll back the transaction.", re);
+				throw new RollbackFailureException(
+						"An error occurred attempting to roll back the transaction.",
+						re);
 			}
 			throw ex;
 		} finally {
@@ -138,31 +138,26 @@ public class UserJpaController {
 		}
 	}
 
-	/**
-	 * findUtilisateurEntities() renvoi tous les éléments de la table
-	 * Utilisateur de la bd.
-	 * 
-	 * @return une liste contenant les éléments de Utilisateur
-	 */
 	public List<User> findUtilisateurEntities() {
 		return findUserEntities(true, -1, -1);
 	}
 
 	/**
-	 * findUtilisateurEntities() renvoi tous les éléments de la table
-	 * Utilisateur de la bd correspondants aux critères donnés.
+	 * findUtilisateurEntities() renvoi tous les ï¿½lï¿½ments de la table
+	 * Utilisateur de la bd correspondants aux critï¿½res donnï¿½s.
 	 * 
 	 * @param maxResults
-	 *            : nombre maximal d'éléments à retourner
+	 *            : nombre maximal d'ï¿½lï¿½ments ï¿½ retourner
 	 * @param firstResult
-	 *            : position du premier élément à retourner
-	 * @return une liste contenant les éléments de Utilisateur
+	 *            : position du premier ï¿½lï¿½ment ï¿½ retourner
+	 * @return une liste contenant les ï¿½lï¿½ments de Utilisateur
 	 */
 	public List<User> findUserEntities(int maxResults, int firstResult) {
 		return findUserEntities(false, maxResults, firstResult);
 	}
 
-	private List<User> findUserEntities(boolean all, int maxResults, int firstResult) {
+	private List<User> findUserEntities(boolean all, int maxResults,
+			int firstResult) {
 		EntityManager em = getEntityManager();
 		try {
 			CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
@@ -186,6 +181,18 @@ public class UserJpaController {
 			em.close();
 		}
 	}
+	
+    public User findUtilisateurByMail(String mail) {
+        EntityManager em = getEntityManager();
+        String query = "SELECT u FROM User u where u.mail="+mail;
+        try {
+            Query q = em.createQuery(query);
+        
+            return (User) q.getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 
 	public int getUserCount() {
 		EntityManager em = getEntityManager();

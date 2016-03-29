@@ -5,8 +5,8 @@
 	<projects>
 		<project>AppEJB</project>
 		<project>AppEJBClient</project>
-		<project>AppVue</project>
 		<project>AppJPA</project>
+		<project>AppVue</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -1,0 +1,522 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Servlets;
+
+import EJB.AchatProduitBeanLocal;
+import EJB.UtilisateurBeanLocal;
+import Model.AchatProduit;
+import Model.Commande;
+import Model.Utilisateur;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.security.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+ * UtilisateurServlet est la classe qui gère tout ce qui concerne un utilisateur : 
+ * inscription, connexion,déconnexion, récupération du mot de passe, affichage 
+ * des données utilisateur, modification des données utilisateur et affichage de 
+ * l’historique d’achats..
+ * 
+ * @author dac
+ */
+@WebServlet(name = "ControllerServlet", loadOnStartup = 1, urlPatterns = {
+    "/signIn",
+    "/signUp",
+    "/disconnect",
+    "/viewProfile",
+    "/editProfile",
+    "/historiqueAchats",
+    "/resetPassword",
+    "/confirmResetPassword",
+})
+public class UtilisateurServlet extends HttpServlet {
+
+    @EJB
+    private UtilisateurBeanLocal utilisateurBean;
+	
+	@EJB
+	private AchatProduitBeanLocal achatProduitBean;
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String userPath = request.getServletPath();
+        
+        if(request.getParameter("redirect") != null) {
+            request.setAttribute("redirect", request.getParameter("redirect"));
+        }
+        
+        HttpSession session = request.getSession();
+
+        switch (userPath) {
+
+            case "/signIn":
+                if(session.getAttribute("user") != null) {
+                    response.sendRedirect("/ecommerceDac-web/");
+                    return;
+                }
+                request.setAttribute("pageTitle", "Connexion au compte");
+                break;
+
+            case "/signUp":
+                if(session.getAttribute("user") != null) {
+                    response.sendRedirect("/ecommerceDac-web/");
+                    return;
+                }
+                request.setAttribute("pageTitle", "Créer un compte");
+                break;
+
+            case "/disconnect":
+                if(session.getAttribute("user") == null) {
+                    response.sendRedirect("/ecommerceDac-web/");
+                    return;
+                }
+                
+                session.setAttribute("user", null);
+                request.setAttribute("info", "Vous avez été déconnecté de votre compte");
+                session.setAttribute("shoppingCart", null);
+                getServletContext().getRequestDispatcher("").forward(request, response);
+                break;
+
+            case "/viewProfile":
+                viewProfile(request, response);
+                return;
+
+            case "/historiqueAchats":
+                viewHistoriqueAchats(request, response);
+                return;
+
+            case "/resetPassword":
+                request.getRequestDispatcher("/WEB-INF/view/resetPassword.jsp").forward(request, response);
+                return;
+
+            case "/confirmResetPassword":
+                confirmResetPassword(request, response);
+                return;
+        }
+
+        // use RequestDispatcher to forward request internally
+        String url = "/WEB-INF/view" + userPath + ".jsp";
+        request.getRequestDispatcher(url).forward(request, response);
+    }
+
+    /**
+     * viewProfile() permet l'affichage le compte d'un utilisateur.
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void viewProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        HttpSession session = request.getSession();
+        Utilisateur user = (Utilisateur)session.getAttribute("user");
+        if ( user == null ) {
+            request.setAttribute("info", "Vous devez être identifié pour effectuer cette action");
+            getServletContext().getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+            return;
+        }
+        getServletContext().getRequestDispatcher("/WEB-INF/view/viewProfile.jsp").forward(request, response);
+    }
+    
+    /**
+     * viewHistoriqueAchats() permet l'affichage de l'historique des achats d'un utilisateur.
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void viewHistoriqueAchats(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        HttpSession session = request.getSession();
+        Utilisateur user = (Utilisateur)session.getAttribute("user");
+        if ( user == null ) {
+            request.setAttribute("info", "Vous devez être identifié pour effectuer cette action");
+            //getServletContext().getRequestDispatcher("").forward(request, response);
+response.sendRedirect("/ecommerceDac-web/");
+            return;
+        }
+
+        ArrayList<AchatProduit> achats = achatProduitBean.getHistoriqueAchats(user.getIdUser());
+        System.out.println("ACHATS: " + achats.size());
+        HashMap<Commande, ArrayList<AchatProduit>> commandes = new HashMap<>();
+        for (AchatProduit achat : achats ) {
+            ArrayList<AchatProduit> groupe = commandes.get(achat.getCommande());
+            if ( groupe == null ) {
+                groupe = new ArrayList<>();
+                commandes.put(achat.getCommande(), groupe);
+            }
+            groupe.add(achat);
+        }
+        System.out.println("COMMANDES: " + commandes.keySet().size());
+        request.setAttribute("commandesMap", commandes);
+
+        getServletContext().getRequestDispatcher("/WEB-INF/view/historiqueAchats.jsp").forward(request, response);
+    }
+
+    /**
+     * confirmResetPassword() permet de confirmer la réinitialisation du mot de 
+     * passe de l'utilisateur.
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void confirmResetPassword(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        String token = request.getParameter("token");
+        if ( token == null || token.isEmpty() ) {
+            getServletContext().getRequestDispatcher("").forward(request, response);
+            return;
+        }
+
+        // fix url special chars replacement
+        token = token.replace(" ", "+");
+
+        String result = utilisateurBean.confirmChangePassword(token);
+
+        if ( result.startsWith("OK_") ) {
+            request.setAttribute("newPass", result.substring(3));
+            getServletContext().getRequestDispatcher("/WEB-INF/view/resetPasswordSuccess.jsp").forward(request, response);
+            return;
+        }
+
+        switch (result) {
+            case "ERR_INTERNAL":
+                request.setAttribute("info", "Erreur interne du serveur");
+                break;
+            case "ERR_DECIPHER":
+            case "ERR_PATTERN":
+            case "ERR_NUMBERS":
+            case "ERR_USERNOTFOUND":
+            case "ERR_EMAILNOTMATCH":
+                request.setAttribute("info", "Token de récupération invalide");
+                break;
+            case "ERR_TIME":
+                request.setAttribute("info", "Token de récupération périmé");
+                break;
+            default:
+                request.setAttribute("info", "Erreur inconnue");
+        }
+        getServletContext().getRequestDispatcher("").forward(request, response);
+    }
+
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+        String userPath = request.getServletPath();
+        Pattern pattern;
+        Matcher matcher;
+        
+        if(request.getParameter("redirect") != null) {
+            request.setAttribute("redirect", request.getParameter("redirect"));
+        }
+        
+        HttpSession session = request.getSession();
+        
+        switch (userPath) {
+
+            case "/signIn":
+                if(session.getAttribute("user") != null) {
+                    response.sendRedirect("/ecommerceDac-web/");
+                    return;
+                }
+                
+                String email = request.getParameter("email");
+                String password = request.getParameter("password");
+                
+                pattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+                matcher = pattern.matcher(email);
+                
+                if(!matcher.find()) {
+                    request.setAttribute("pageTitle", "Erreur de connexion");
+                    request.setAttribute("error", "L'adresse email spécifiée est invalide");
+                    request.setAttribute("emailError", true);
+                }
+                else {
+                    Utilisateur loggedUser = utilisateurBean.signIn(email, sha1(password));
+                    if (loggedUser == null) {
+                        request.setAttribute("pageTitle", "Erreur de connexion");
+                        request.setAttribute("error", "L'adresse email ou le mot de passe erroné");
+                    }
+                    else {
+                        session.setAttribute("user", loggedUser);
+                        if(request.getParameter("redirect") != null) {
+                            response.sendRedirect(request.getParameter("redirect"));
+                        }
+                        else {
+                            response.sendRedirect("/ecommerceDac-web/");
+                        }
+                        return;
+                    }
+                }
+                request.setAttribute("email", email);
+                break;
+
+            case "/signUp":
+                if(session.getAttribute("user") != null) {
+                    response.sendRedirect("/ecommerceDac-web/");
+                    return;
+                }
+                
+                request.setAttribute("pageTitle", "Créer un compte");
+                String nom = request.getParameter("nom");
+                String prenom = request.getParameter("prenom");
+                String mail = request.getParameter("mail");
+                String adresse = request.getParameter("adresse");
+                String telephone = request.getParameter("tel");
+                String passwordS = sha1(request.getParameter("password"));
+                
+                pattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+                matcher = pattern.matcher(mail);
+                boolean error = false;
+                String errorMessage = "Veuillez effectuer les corrections suivantes : ";
+                
+                if(!matcher.find()) {
+                    error = true;
+                    errorMessage += "l'adresse email n'est pas valide";
+                    request.setAttribute("errorEmail", true);
+                }
+                
+                pattern = Pattern.compile("^0[0-9]{9}$");
+                matcher = pattern.matcher(telephone);
+                
+                if(!matcher.find()) {
+                    if(error){
+                        errorMessage += ", le numéro de téléphone n'est pas valide";
+                    }
+                    else {
+                        error = true;
+                        errorMessage += "le numéro de téléphone n'est pas valide";
+                    }
+                    request.setAttribute("errorNum", true);
+                }
+                
+                if(error) {
+                    request.setAttribute("errorMessage", errorMessage);
+                }
+                else {
+                    try {
+                        utilisateurBean.signUp(nom, prenom, mail, adresse, telephone,
+                                                                   passwordS, "USER");
+                        if(request.getParameter("redirect") != null) {
+                            response.sendRedirect(request.getParameter("redirect"));
+                        }
+                        else {
+                            request.setAttribute("info", "Vous pouvez désormais vous connecter à votre compte");
+                            String url = "/WEB-INF/view/signIn.jsp";
+                            request.getRequestDispatcher(url).forward(request, response);
+                        }
+                        return;
+                    }
+                    catch (Exception ex) {
+                        request.setAttribute("errorMessage", "Votre inscription n'a pas pu être finalisée, vérifiez que vous ne possédez pas déjà un compte");
+                    }
+                }
+                request.setAttribute("email", mail);
+                request.setAttribute("nom", nom);
+                request.setAttribute("prenom", prenom);
+                request.setAttribute("adresse", adresse);
+                request.setAttribute("telephone", telephone);
+                break;
+
+            case "/editProfile":
+                editProfile(request, response);
+                return;
+
+            case "/resetPassword":
+                sendResetPassword(request, response);
+                return;
+        }
+
+        // use RequestDispatcher to forward request internally
+        String url = "/WEB-INF/view" + userPath + ".jsp";
+        request.getRequestDispatcher(url).forward(request, response);
+    }
+
+    /**
+     * editProfile() permet de modifier les données d'un compte utilisateur.
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void editProfile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        HttpSession session = request.getSession();
+        Utilisateur user = (Utilisateur)session.getAttribute("user");
+        if ( user == null ) {
+                request.setAttribute("info", "Vous devez être identifié pour effectuer cette action");
+                getServletContext().getRequestDispatcher("").forward(request, response);
+                return;
+        }
+
+        String motDePasse = sha1(request.getParameter("password"));
+        String nom = request.getParameter("nom");
+        String prenom = request.getParameter("prenom");
+        String adresseFacturation = request.getParameter("adresseFacturation");
+        String telephone = request.getParameter("telephone");
+        String nouveauMdp = request.getParameter("nouveauMdp");
+        if ( nouveauMdp != null && !nouveauMdp.isEmpty() )
+            nouveauMdp = sha1(nouveauMdp);
+        String confirmMdp = request.getParameter("confirmMdp");
+        if ( confirmMdp != null && !confirmMdp.isEmpty() )
+            confirmMdp = sha1(confirmMdp);
+
+        int res = utilisateurBean.editUtilisateur(user.getIdUser(),
+                        motDePasse, nom, prenom, adresseFacturation, telephone,
+                        nouveauMdp, confirmMdp);
+
+        switch (res) {
+            case 0:
+                request.setAttribute("info", "Données modifiées avec succès!");
+                // update user attribute
+                session.setAttribute("user", utilisateurBean.getUtilisateur(user.getIdUser()));
+                break;
+            case -1:
+                request.setAttribute("info", "Erreur interne du serveur");
+                break;
+            case 10:
+                request.setAttribute("info", "Utilisateur introuvable");
+                break;
+            case 20:
+                request.setAttribute("info", "Mot de passe incorrect");
+                break;
+            case 30:
+                request.setAttribute("info", "Nom invalide");
+                break;
+            case 40:
+                request.setAttribute("info", "Prénom invalide");
+                break;
+            case 50:
+                request.setAttribute("info", "Adresse de facturation invalide");
+                break;
+            case 60:
+                request.setAttribute("info", "Téléphone invalide");
+                break;
+            case 80:
+                request.setAttribute("info", "Les deux nouveaux mots de passes ne correspondent pas");
+                break;
+            default:
+                request.setAttribute("info", "Erreur inconnue");
+        }
+        viewProfile(request, response);
+    }
+
+    /**
+     * sendResetPassword() permet d'envoyer un email lors d'un oubli de mot de 
+     * passe.
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException 
+     */
+    private void sendResetPassword(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        String email = request.getParameter("email");
+        if ( email == null || email.isEmpty() ) {
+            request.setAttribute("info", "Veuillez entrer une adresse email valide");
+        }
+        else {
+            String followURL = request.getScheme() + "://" + request.getServerName();
+            if ( request.getServerPort() != 80 && request.getServerPort() != 443 ) {
+                followURL += ":" + request.getServerPort();
+            }
+            followURL += request.getContextPath() + "/confirmResetPassword?token=";
+
+            int result = utilisateurBean.queryChangePassword(email, followURL);
+            switch (result) {
+                case 0:
+                    request.setAttribute("info", "Un email de réinitialisation vous a été envoyé!");
+                    break;
+                case -1:
+                    request.setAttribute("info", "Erreur interne du serveur");
+                    break;
+                case 10:
+                    request.setAttribute("info", "Cet email n'est pas enregistré sur ce site");
+                    break;
+            }
+        }
+        getServletContext().getRequestDispatcher("/WEB-INF/view/resetPassword.jsp").forward(request, response);
+    }
+
+     /**
+     * sha1() permet de chiffrer une chaine de caractères.
+     * 
+     * @param s : chaine à chiffrer
+     * @return la chaine de caractères chiffrée
+     */
+    public static String sha1(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            md.update(s.getBytes());
+            byte[] output = md.digest();
+            return bytesToHex(output);
+        }
+        catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * bytesToHex() permet transformer une chaine de bytes en Hex.
+     * 
+     * @param b : chaine à transformer
+     * @return la chaine transformée
+     */
+    public static String bytesToHex(byte[] b) {
+        char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+                          };
+        StringBuilder buf = new StringBuilder();
+        for (int j = 0; j < b.length; j++) {
+            buf.append(hexDigit[(b[j] >> 4) & 0x0f]);
+            buf.append(hexDigit[b[j] & 0x0f]);
+        }
+        return buf.toString();
+    }
+
+}

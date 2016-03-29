@@ -1,0 +1,131 @@
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+.gallery {
+    margin-left: 100px;
+}
+.page-title {
+    font-family: Arial;
+    color: #444;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 50px;
+    font-weight: 200;
+}
+
+.thumbnail {
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  border: 2px solid #444;
+  text-decoration: none;
+}
+
+.thumbnail:hover {
+  text-decoration: none;
+}
+
+.thumbnail img {
+  opacity: .75;
+  width: 200px;
+  height: 200px;
+}
+
+.thumbnail img:hover {
+  opacity: 1;
+}
+
+.li-gallery {
+    list-style: none;
+    width: 230px;
+}
+
+.desc-gallery {
+    font-weight: normal;
+    color: black;
+    text-decoration: none;
+    margin: 5px;
+    position: relative;
+}
+.carousel-indicators .active {
+        width: 12px;
+        height: 12px;
+        margin: 0px;
+        background-color: greenyellow;
+}
+.carousel-indicators li {
+        background: none repeat scroll 0% 0% rgb(196, 196, 190);
+}.control-carousel {
+        position: absolute;
+        top: 50%;
+        font-size: 40px;
+        color: rgb(194, 194, 193);
+}.right {
+        right: 0px;
+}
+    
+.panel-body{
+       min-height: 300px; max-height: 300px;overflow-y: hidden;
+}
+.panel-footer{
+        background-color: white;
+        border-top: none;
+}
+.panel-footer button{
+        width: 100%;
+}
+.navbar-fixed-top, footer {
+        background-image: linear-gradient(rgb(82, 87, 92), rgb(58, 63, 68) 70%, rgb(58, 63, 68));
+        color: white;
+}
+footer{
+        min-height: 100px;
+        
+}
+h1, h2, h4 {
+        color: green;
+}
+.panel{
+        box-shadow: -1px 2px 5px 1px rgba(0, 0, 0, 0.7),
+    -1px 2px 20px rgba(255, 255, 255, 0.6) inset; 
+}
+.home{
+        max-width: 950px; margin:auto;
+        padding-top: 75px;
+        padding-bottom: 100px;
+}
+.home2{
+        margin :0px;
+        padding: 0px;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+        background-color: gray;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+    background-color: gray;
+}
+
+img.imgbtn {
+    padding: 2px;
+    opacity: 0.75;
+}
+img.imgbtn:hover:not(:active) {
+    opacity: 1.0;
+}
+
+img.icon32 {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+}
+
+.abs-bottom-right {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+}
+
+.rel {
+    position: relative;
+}
+

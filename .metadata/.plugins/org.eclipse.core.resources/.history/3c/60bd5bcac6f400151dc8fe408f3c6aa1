@@ -1,0 +1,155 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+    <%@page import="models.Product" %>
+    <%@page import="java.util.List" %>
+    <%@page import="models.PanierItem" %>
+       <%@page import="utils.CartUtils" %>
+     <%    
+    CartUtils.initSession(session);
+    %>
+   
+    <% Product p = (Product) request.getAttribute("product"); %>
+    <% List<PanierItem> panier = (List<PanierItem>) session.getAttribute("cart"); 
+    boolean exists = false;
+    for(PanierItem prod: panier){
+    	if(prod.getProduct().getId() == p.getId())
+			{
+				exists = true;
+				break;
+			}
+    }
+    %>
+    
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+	    <meta name="keywords" content="DigitalDauphine, eCommerce, projet CDAI">
+	    <meta name="robots" content="all">
+
+	    <title>DigitalDauphine - Online Store</title>
+
+	    <!-- Bootstrap Core CSS -->
+	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	    
+	    <!-- Customizable CSS -->
+	    <link rel="stylesheet" href="assets/css/main.css">
+	    <link rel="stylesheet" href="assets/css/green.css">
+	    <link rel="stylesheet" href="assets/css/owl.carousel.css">
+		<link rel="stylesheet" href="assets/css/owl.transitions.css">
+		<link rel="stylesheet" href="assets/css/animate.min.css">
+
+	    <!-- Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800' rel='stylesheet' type='text/css'>
+		
+		<!-- Icons/Glyphs -->
+		<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+		
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="assets/images/favicon.ico">
+
+		<!-- HTML5 elements and media queries Support for IE8 : HTML5 shim and Respond.js -->
+		<!--[if lt IE 9]>
+			<script src="assets/js/html5shiv.js"></script>
+			<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+
+ 		<script type="text/javascript">var switchTo5x=true;</script>
+		<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
+		<script type="text/javascript">stLight.options({publisher: "dfa2e15c-2894-40e6-83e8-87fdc1453534", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+ 	</head>
+<body>
+	<jsp:include page="Header.jsp" />
+<div id="single-product">
+    <div class="container">
+
+         <div class="no-margin col-xs-12 col-sm-6 col-md-5 gallery-holder">
+    <div class="product-item-holder size-big single-product-gallery small-gallery">
+
+        <div id="owl-single-product">
+            <div class="single-product-gallery-item" id="slide1">
+                <a data-rel="prettyphoto">
+                    <img class="img-responsive" alt="" style="width:280px !important;" src="data:image/jpeg;base64,<%=p.getImage() %>"/>
+                </a>
+            </div><!-- /.single-product-gallery-item -->
+        </div><!-- /.single-product-slider -->
+
+    </div><!-- /.single-product-gallery -->
+</div><!-- /.gallery-holder -->        
+        <div class="no-margin col-xs-12 col-sm-7 body-holder">
+    <div class="body">
+        <div class="availability" style="margin-left: 2px;"><label>Availability:</label><span class=<%if(p.getQte() > 0){%>"available">  in stock<%} else{ %>"not-available">  out of stock<%} %></span></div>
+
+        <div class="title"><a href="#"><%= p.getName() %></a></div>
+        <div class="brand"><%= p.getCategory() %></div>
+
+        <div class="social-row">
+            <span class='st_facebook_large' displayText='Facebook'></span>
+			<span class='st_twitter_large' displayText='Tweet'></span>
+			<span class='st_linkedin_large' displayText='LinkedIn'></span>
+			<span class='st_pinterest_large' displayText='Pinterest'></span>
+			<span class='st_email_large' displayText='Email'></span>
+        </div>
+
+        <div class="excerpt">
+			<p><%= p.getShort_description() %></p>
+        </div>
+        
+        <div class="prices">
+            <div class="price-current">$<%=p.getPrice() %></div>
+            <div class="price-prev"><% if(p.getSale_price() > 0){%>$<%=p.getSale_price()%><%} %></div>
+        </div>
+
+        <div class="qnt-holder">
+            <div class=<%if(p.getQte() > 0 && !exists){ %>"le-quantity"<%}else{ %>"le-qte"<%} %>>
+                <form>
+                    <a id="minusQte" class="minus"></a>
+                    <input id="inputQte" name="quantity" readonly="readonly" type="text" value=<%if(p.getQte() > 0){ %>"1"<%}else{ %>"0"<%} %> />
+                    <a id="addQte" class="plus" data-maxval="<%= p.getQte() %>"></a>
+                </form>
+            </div>
+            <%if(p.getQte() > 0 && !exists) { %>
+            <a id="addto-cart" href="#" class="le-button huge notClickable" data-id="<%= p.getId() %>">add to cart</a>
+            <%} else { %>
+            <a href="#" class="disabledBtn huge">add to cart</a>
+            <%} %>
+        </div><!-- /.qnt-holder -->
+    </div><!-- /.body -->
+
+</div><!-- /.body-holder -->
+    </div><!-- /.container -->
+</div><!-- /.single-product -->
+
+<!-- ========================================= SINGLE PRODUCT TAB ========================================= -->
+<section id="single-product-tab">
+    <div class="container">
+        <div class="tab-holder">
+            
+            <ul class="nav nav-tabs simple" >
+                <li class="active"><a href="#description" data-toggle="tab">Description</a></li>
+            </ul><!-- /.nav-tabs -->
+                <div class="tab-content">
+                <div class="tab-pane active" id="description">
+					<p><%=p.getDescription() %></p>                    
+                </div><!-- /.tab-pane #description -->
+            </div><!-- /.tab-content -->
+        </div><!-- /.tab-holder -->
+    </div><!-- /.container -->
+</section><!-- /#single-product-tab -->
+<jsp:include page="Footer.jsp" />
+	<!-- JavaScripts placed at the end of the document so the pages load faster -->
+	<jsp:include page="jsCall.jsp" />
+
+	<script>
+		$(document).ready(function(){ 
+			$("#owl-single-product .owl-item").height(450);
+		});
+	</script>
+</body>
+</html>
